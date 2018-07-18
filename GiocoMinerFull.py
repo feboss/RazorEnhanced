@@ -720,7 +720,7 @@ def getNumRuneRunebook(runeBookSerial):
         if not (x[0].isnumeric()) and not (x.isnumeric()) and (x != "Empty") and (x != "Gate Travel") and (x != "Charges: ") and (x != "Max Charges: ") and (x != "Rename book") and (x != "Sacred Journey") and (x != "Set default") and (x != "Recall") and (x != "Drop rune") :
             newListaBook.append(x)
     if Target.HasTarget(): Target.Cancel() 
-    return len(newListaBook)      
+    return len(newListaBook)/2      
  
 form = MainForm()
          
