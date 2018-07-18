@@ -99,6 +99,7 @@ def Smelta(oggettoID):
     Gumps.SendAction(949095101, 0)    
 109.0 - 116.3
 def main():
+    rifornisci()
     while Player.GetSkillValue("Blacksmith")>=95.4 and Player.GetSkillValue("Blacksmith")<106.4:
         makeMartello()
         makeTinkerTool()
