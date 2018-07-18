@@ -9,6 +9,7 @@ gorgetID=0x1413
 glovesID=0x1414
 armsID=0x1410
 legsID=0x1411
+armorID=0x1415
 tinkerID = 0x1EB8
 cassaLavoro=0x40066CA7
 martelloID=0x0FB5
@@ -22,7 +23,7 @@ gumpPlateGorget=65 #fino a 106.4
 gumpPlateGloves=58 #fino a 108.9
 gumpPlateArms=51 #fino a 116.3
 gumpPlateLegs=72 #fino a 118.8
-gumpPlateArmor=0 #120
+gumpPlateArmor=79 #120
 
 
 cassaLingotti=0x404A31F2
@@ -70,7 +71,7 @@ def Crafta(gumpID):
     Gumps.WaitForGump(949095101, 10000)
     Journal.Clear()
     while True:
-        if (Player.Weight > Player.MaxWeight - 30): 
+        if (Player.Weight > Player.MaxWeight - 80): 
             break
         if (int(((Items.GetPropStringList(Player.Backpack)[2].split('/', 1)[0]))[10:])>120):
             break
@@ -118,11 +119,9 @@ def main():
         makeTinkerTool()
         Crafta(gumpPlateLegs)
         Smelta(legsID)
-        '''
-    while Player.GetSkillValue("Blacksmith")>=118.8 and Player.GetSkillValue("Blacksmith")<118.8: 
+    while Player.GetSkillValue("Blacksmith")>=118.8 and Player.GetSkillValue("Blacksmith")<120: 
         makeMartello()
         makeTinkerTool()
-        Crafta(gumpPlateLegs)
-        Smelta(legsID) 
-  '''      
+        Crafta(gumpPlateArmor)
+        Smelta(armorID) 
 main()
