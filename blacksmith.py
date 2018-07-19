@@ -1,7 +1,12 @@
 '''
-gorget fino a 106.4(10)
-plate gloves- 106.5 - 108.9 (12)
-109.0 - 116.3 producete Plate Arms 
+0.0 - 50.0 producete Dagger
+50.1 - 64.5 producete Mace
+64.6 - 74.3 producete Cutlass
+74.4 - 86.7 producete Kryss
+86.8 - 95.3 producete Short Spear
+95.4 - 106.4 producete Plate Gorget
+106.5 - 108.9 producete Plate Gloves
+109.0 - 116.3 producete Plate Arms
 116.4 - 118.8 producete Plate Legs
 118.9 - 120.0 producete Plate Armor
 '''
