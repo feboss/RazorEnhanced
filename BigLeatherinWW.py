@@ -53,7 +53,7 @@ def RecallNextSpot(RuneBookMining1,lastrune):
     Journal.Clear()
     
 def Scarico(RuneBookMining1,lastrune):
-    if Player.Weight >= Player.MaxWeight - 120:
+    if Player.Weight >= Player.MaxWeight - 50:
         if Target.HasTarget(): Target.Cancel()
         Journal.Clear()
         while True:
@@ -78,7 +78,7 @@ def main(lastrune):
         if mob is None:
             Misc.SendMessage("Non Trovato")
             RecallNextSpot(RuneBookMining1,lastrune)
-            lastrune +6
+            lastrune = lastrune +6
             Misc.Pause(200)
             main(lastrune)
         while True:            
@@ -90,7 +90,8 @@ def main(lastrune):
             if Mobiles.FindBySerial(mob.Serial) is None:
                 CercaMorti()
                 lastrune=Scarico(RuneBookMining1,lastrune)
-                main(lastrune+6)
+                main(lastrune)
+                lastrune = lastrune +6
         
         
             
