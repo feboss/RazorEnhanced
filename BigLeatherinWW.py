@@ -90,8 +90,11 @@ def main(lastrune):
             if Mobiles.FindBySerial(mob.Serial) is None:
                 CercaMorti()
                 lastrune=Scarico(RuneBookMining1,lastrune)
-                main(lastrune)
-                lastrune = lastrune +6
+                if lastrune >= ((6*12)-1):
+                    lastrune=7
+                
+                main(lastrune +6)
+                
         
         
             
