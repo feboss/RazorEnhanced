@@ -568,10 +568,10 @@ def waitForMana():
         Misc.Pause(manaPause)
    
 def MakePickaxe():
-    if getNumeriOggetti(tinkerID) == 0:
+    if Items.BackpackCount(tinkerID, -1) == 0:
         form.writeTextBox("ERRORE: Non hai il Tinker Tool. Vallo a comprare e ricominciamo")
         return
-    if getNumeriOggetti(pickaxeID) >= 2: ####DASISTEMARE
+    if Items.BackpackCount(pickaxeID, -1) >= 2: ####DASISTEMARE
         return
     else:
         Items.UseItemByID(tinkerID,-1) #usa il tinker tool
@@ -584,7 +584,7 @@ def MakePickaxe():
         form.writeTextBox("Ho costruito un Piccone. Quanto so bravo?")
            
 def MakeTinkerTool():
-    if getNumeriOggetti(tinkerID) < 2:
+    if Items.BackpackCount(tinkerID, -1) < 2:
         Items.UseItemByID(tinkerID,-1) #usa il tinker tool
         Gumps.WaitForGump(949095101, 10000)
         Gumps.SendAction(949095101, 8) # tools
@@ -593,14 +593,6 @@ def MakeTinkerTool():
         Gumps.WaitForGump(949095101, 10000)
         Gumps.SendAction(949095101, 0) # close
         form.writeTextBox("Ho costruito un Tinker Tool... Quanto so bravo?")
-       
-def getNumeriOggetti(xxxID):
-    i = 0
-    for item in Player.Backpack.Contains:
-        if item.ItemID == xxxID:
-            i+=1
-    return i
-     
    
 def Scarico(RuneBookBanca,MineBag1,MineBag2,FoodBag,SpazzaturaCasa,lastrune,PosizioneRunaCasa):
     if Player.Weight >= WeightLimit - 120:
