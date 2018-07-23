@@ -509,16 +509,6 @@ def moveFood(FoodBag):
                 Items.Move(item, FoodBag, 0)
                 Misc.Pause(DragDelay)
    
-def moveFood2():
-    FoodBagx = Items.FindBySerial(form.FoodBag)
-    for item in FoodBagx.Contains:
-            for xfoodID in NoFoodID: 
-                if item.ItemID == xfoodID:
-                    form.writeTextBox("Sposto cibo inutile nella bag spazzatura.")
-                    Items.Move(item, form.MineBag2, 0)
-                    Misc.Pause(DragDelay)
-    form.writeTextBox("Lingotti e Gemme scaricate.")
-   
 def giveFood(FoodBag,FireBeetle):
     food = Items.FindBySerial(FoodBag)
     for item in food.Contains:
@@ -531,16 +521,6 @@ def giveFood(FoodBag,FireBeetle):
     createFood(FoodBag)
     giveFood(FoodBag,FireBeetle)
         
-       
-def smeltaDaCassa():
-    cont = Items.FindBySerial(MineBag)
-    for item in cont.Contains:
-        for xoreID in oreID:
-            if item.ItemID == xoreID:
-                Items.UseItem(item)
-                Target.WaitForTarget(2000, False)
-                Target.TargetExecute(0x40487754)
-                Misc.Pause(200)
    
 def smelta(FireBeetle):
     form.writeTextBox("Fammi Smeltare...")
@@ -678,6 +658,7 @@ def minaCava():
                             Items.UseItemByID(pickaxeID,-1)
                             Target.WaitForTarget(2000,False)
                             Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,0,tile.StaticID)
+                            uscitaDiSicurezza-=1
                             Misc.Pause(500)
 def minaMontagna():
     uscitaDiSicurezza = 15
