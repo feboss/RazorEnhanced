@@ -1,34 +1,25 @@
 import clr
- 
 clr.AddReference("System")
 clr.AddReference("System.Drawing")
 clr.AddReference("System.Windows.Forms")
- 
-import System
 import System.Drawing
 import System.Windows.Forms
+
 from System.Drawing import *
 from System.Windows.Forms import *
-import thread, time
-import System.Threading
- 
- 
-TimeoutOnWaitAction = 4000
- 
+import thread
+import cPickle as pickle
+
 ####################################
 ######### Variabili Sistema#########
 ####################################
 pickaxeID = 0x0E86
-forgiacasaID = 0x0FB1
 tinkerID = 0x1EB8
-oreID = [0x19B7, 0x19B8, 0x19B9, 0x19BA]
-gemmaID = [0x3195, 0x3193, 0x3194, 0x3192, 0x3198, 0x3197]
-SiFoodID = [0x09C9, 0x09F2, 0x09B7, 0x09C0]
-NoFoodID = [0x097D, 0x09D2, 0x09D0, 0x09D1, 0x09EB, 0x097B]
-AllFood = SiFoodID + NoFoodID
-ingotID = 0x1BF2
 lastrune = 5
 RecallPause = 4500
+DragDelay = 1200
+TimeoutOnWaitAction = 10000
+WeightLimit = Player.MaxWeight - 80
 noLrc = "More reagents are needed for this spell"
 noMana = "Insufficient mana for this spell"
 noPickaxe = "You have worn out your tool!"
@@ -36,504 +27,496 @@ locationBlocked = "that location is blocked"
 noMetal = "There is no metal here to mine"
 youcant = "You can't mine there"
 cantseen = "Target cannot be seen"
-WeightLimit = Player.MaxWeight - 80
-DragDelay = 1200
- 
- 
+
 class MainForm(Form):
     def __init__(self):
         self.InitializeComponent()
- 
+    
     def InitializeComponent(self):
-        self.RuneBookBanca = Player.Serial
-        self.RuneBookMining1 = Player.Serial
-        self.RuneBookMining2 = Player.Serial
-        self.MineBag1 = Player.Serial
-        self.MineBag2 = Player.Serial
-        self.FoodBag = Player.Serial
-        self.PosizioneRunaCasa = 0
-        self.SpazzaturaCasa = Player.Serial
-        self.FireBeetle = Player.Serial
- 
-        self.PosizioneRunaCasa = self.PosizioneRunaCasa * 6 - 1
-        self._groupBox_Backpack = System.Windows.Forms.GroupBox()
-        self._groupBox_Casa = System.Windows.Forms.GroupBox()
-        self._groupBox_Generali = System.Windows.Forms.GroupBox()
-        self._label_Impostazioni = System.Windows.Forms.Label()
-        self._button_Run = System.Windows.Forms.Button()
-        self._groupBox4 = System.Windows.Forms.GroupBox()
-        self._label_RunebookMining1 = System.Windows.Forms.Label()
-        self._button_RunebookMining1 = System.Windows.Forms.Button()
-        self._label_RunebookMining2 = System.Windows.Forms.Label()
-        self._button_RunebookMining2 = System.Windows.Forms.Button()
-        self._label_SpazzaturaBackpack = System.Windows.Forms.Label()
-        self._button_SpazzaturaBackpack = System.Windows.Forms.Button()
-        self._label_Runebook_Casa = System.Windows.Forms.Label()
-        self._button_RunebookCasa = System.Windows.Forms.Button()
-        self._label_Lingotti = System.Windows.Forms.Label()
-        self._button_Lingotti = System.Windows.Forms.Button()
-        self._button_Gemme = System.Windows.Forms.Button()
-        self._label_SpazzaturaCasa = System.Windows.Forms.Label()
-        self._button_SpazzaturaCasa = System.Windows.Forms.Button()
-        self._label_FireBeetle = System.Windows.Forms.Label()
-        self._button_FireBeetle = System.Windows.Forms.Button()
-        self._label_PosizioneCasa = System.Windows.Forms.Label()
-        self._label_Gemme = System.Windows.Forms.Label()
+        self.settings = { 
+                        "RuneBookBanca" : None,
+                        "RuneBookMining" : list(),
+                        "MineBag" : None,
+                        "MineBag2" : None,
+                        "PosizioneRunaCasa" : None,
+                        "FireBeetle" : None,
+                        "Posizione" : None
+                        }
+        self._label_posizioneRuna = System.Windows.Forms.Label()
+        self._groupBox_minebook = System.Windows.Forms.GroupBox()
+        self._button_delListaRunebook = System.Windows.Forms.Button()
+        self._listBox_Runebook = System.Windows.Forms.ListBox()
+        self._button_addListaRunebook = System.Windows.Forms.Button()
+        self._groupBox_runebookCasa = System.Windows.Forms.GroupBox()
+        self._button_runeBookCasa = System.Windows.Forms.Button()
         self._numericUpDown1 = System.Windows.Forms.NumericUpDown()
-        self._textBox_Output = System.Windows.Forms.TextBox()
-        self._label_Output = System.Windows.Forms.Label()
-        self._label_Varie = System.Windows.Forms.Label()
-        self._checkBox1 = System.Windows.Forms.CheckBox()
-        self._groupBox_Backpack.SuspendLayout()
-        self._groupBox_Casa.SuspendLayout()
-        self._groupBox_Generali.SuspendLayout()
-        self._numericUpDown1.BeginInit()
+        self._label_runebookCasa = System.Windows.Forms.Label()
+        self._groupBox_casa = System.Windows.Forms.GroupBox()
+        self._button_position = System.Windows.Forms.Button()
+        self._button_lingotti = System.Windows.Forms.Button()
+        self._button_gemme = System.Windows.Forms.Button()
+        self._label_position = System.Windows.Forms.Label()
+        self._label_lingotti = System.Windows.Forms.Label()
+        self._label_gemme = System.Windows.Forms.Label()
+        self._groupBox_pet = System.Windows.Forms.GroupBox()
+        self._button_fireBeetle = System.Windows.Forms.Button()
+        self._label_fireBeetle = System.Windows.Forms.Label()
+        self._groupBox_output = System.Windows.Forms.GroupBox()
+        self._textBox_output = System.Windows.Forms.TextBox()
+        self._button_Run = System.Windows.Forms.Button()
+        self._groupBox_extra = System.Windows.Forms.GroupBox()
+        self._button_daiCibo = System.Windows.Forms.Button()
+        self._button_scarico = System.Windows.Forms.Button()
+        self._button_smelta = System.Windows.Forms.Button()
+        self._groupBox_minebook.SuspendLayout()
+        self._groupBox_runebookCasa.SuspendLayout()
+        self._groupBox_casa.SuspendLayout()
+        self._groupBox_pet.SuspendLayout()
+        self._groupBox_output.SuspendLayout()
+        self._groupBox_extra.SuspendLayout()
         self.SuspendLayout()
-        #
-        # groupBox_Backpack
-        #
-        self._groupBox_Backpack.Controls.Add(self._label_SpazzaturaBackpack)
-        self._groupBox_Backpack.Controls.Add(self._button_SpazzaturaBackpack)
-        self._groupBox_Backpack.Controls.Add(self._label_RunebookMining2)
-        self._groupBox_Backpack.Controls.Add(self._button_RunebookMining2)
-        self._groupBox_Backpack.Controls.Add(self._label_RunebookMining1)
-        self._groupBox_Backpack.Controls.Add(self._button_RunebookMining1)
-        self._groupBox_Backpack.Location = System.Drawing.Point(12, 25)
-        self._groupBox_Backpack.Name = "groupBox_Backpack"
-        self._groupBox_Backpack.Size = System.Drawing.Size(209, 155)
-        self._groupBox_Backpack.TabIndex = 0
-        self._groupBox_Backpack.TabStop = False
-        self._groupBox_Backpack.Text = "Backpack"
-        #
-        # groupBox_Casa
-        #
-        self._groupBox_Casa.Controls.Add(self._numericUpDown1)
-        self._groupBox_Casa.Controls.Add(self._label_Gemme)
-        self._groupBox_Casa.Controls.Add(self._label_PosizioneCasa)
-        self._groupBox_Casa.Controls.Add(self._label_SpazzaturaCasa)
-        self._groupBox_Casa.Controls.Add(self._button_SpazzaturaCasa)
-        self._groupBox_Casa.Controls.Add(self._button_Gemme)
-        self._groupBox_Casa.Controls.Add(self._label_Lingotti)
-        self._groupBox_Casa.Controls.Add(self._button_Lingotti)
-        self._groupBox_Casa.Controls.Add(self._label_Runebook_Casa)
-        self._groupBox_Casa.Controls.Add(self._button_RunebookCasa)
-        self._groupBox_Casa.Location = System.Drawing.Point(12, 186)
-        self._groupBox_Casa.Name = "groupBox_Casa"
-        self._groupBox_Casa.Size = System.Drawing.Size(209, 169)
-        self._groupBox_Casa.TabIndex = 1
-        self._groupBox_Casa.TabStop = False
-        self._groupBox_Casa.Text = "Casa"
-        #
-        # groupBox_Generali
-        #
-        self._groupBox_Generali.Controls.Add(self._checkBox1)
-        self._groupBox_Generali.Controls.Add(self._label_FireBeetle)
-        self._groupBox_Generali.Controls.Add(self._button_FireBeetle)
-        self._groupBox_Generali.Location = System.Drawing.Point(12, 361)
-        self._groupBox_Generali.Name = "groupBox_Generali"
-        self._groupBox_Generali.Size = System.Drawing.Size(209, 98)
-        self._groupBox_Generali.TabIndex = 2
-        self._groupBox_Generali.TabStop = False
-        self._groupBox_Generali.Text = "Generali"
-        #
-        # label_Impostazioni
-        #
-        self._label_Impostazioni.Font = System.Drawing.Font(
-            "Microsoft Sans Serif",
-            8.25,
-            System.Drawing.FontStyle.Bold,
-            System.Drawing.GraphicsUnit.Point,
-            0,
-        )
-        self._label_Impostazioni.Location = System.Drawing.Point(60, 9)
-        self._label_Impostazioni.Name = "label_Impostazioni"
-        self._label_Impostazioni.Size = System.Drawing.Size(101, 13)
-        self._label_Impostazioni.TabIndex = 3
-        self._label_Impostazioni.Text = "IMPOSTAZIONI"
-        #
-        # button_Run
-        #
-        self._button_Run.Font = System.Drawing.Font(
-            "Microsoft Sans Serif",
-            8.25,
-            System.Drawing.FontStyle.Bold,
-            System.Drawing.GraphicsUnit.Point,
-            0,
-        )
-        self._button_Run.Location = System.Drawing.Point(302, 422)
-        self._button_Run.Name = "button_Run"
-        self._button_Run.Size = System.Drawing.Size(154, 37)
-        self._button_Run.TabIndex = 5
-        self._button_Run.Text = "Run"
-        self._button_Run.UseVisualStyleBackColor = True
-        self._button_Run.MouseClick += self.Button_RunMouseClick
-        #
-        # groupBox4
-        #
-        self._groupBox4.Location = System.Drawing.Point(559, 33)
-        self._groupBox4.Name = "groupBox4"
-        self._groupBox4.Size = System.Drawing.Size(209, 155)
-        self._groupBox4.TabIndex = 1
-        self._groupBox4.TabStop = False
-        self._groupBox4.Text = "Backpack"
-        #
-        # label_RunebookMining1
-        #
-        self._label_RunebookMining1.Location = System.Drawing.Point(6, 16)
-        self._label_RunebookMining1.Name = "label_RunebookMining1"
-        self._label_RunebookMining1.Size = System.Drawing.Size(116, 23)
-        self._label_RunebookMining1.TabIndex = 6
-        self._label_RunebookMining1.Text = "Runebook Mining 1"
-        self._label_RunebookMining1.TextAlign = (
-            System.Drawing.ContentAlignment.MiddleLeft
-        )
-        #
-        # button_RunebookMining1
-        #
-        self._button_RunebookMining1.Location = System.Drawing.Point(128, 16)
-        self._button_RunebookMining1.Name = "button_RunebookMining1"
-        self._button_RunebookMining1.Size = System.Drawing.Size(75, 23)
-        self._button_RunebookMining1.TabIndex = 5
-        self._button_RunebookMining1.Text = "Get"
-        self._button_RunebookMining1.UseVisualStyleBackColor = True
-        self._button_RunebookMining1.MouseClick += self.Button_RunebookMining1MouseClick
-        #
-        # label_RunebookMining2
-        #
-        self._label_RunebookMining2.Location = System.Drawing.Point(6, 39)
-        self._label_RunebookMining2.Name = "label_RunebookMining2"
-        self._label_RunebookMining2.Size = System.Drawing.Size(116, 23)
-        self._label_RunebookMining2.TabIndex = 8
-        self._label_RunebookMining2.Text = "Runebook Mining 2"
-        self._label_RunebookMining2.TextAlign = (
-            System.Drawing.ContentAlignment.MiddleLeft
-        )
-        #
-        # button_RunebookMining2
-        #
-        self._button_RunebookMining2.Location = System.Drawing.Point(128, 39)
-        self._button_RunebookMining2.Name = "button_RunebookMining2"
-        self._button_RunebookMining2.Size = System.Drawing.Size(75, 23)
-        self._button_RunebookMining2.TabIndex = 7
-        self._button_RunebookMining2.Text = "Get"
-        self._button_RunebookMining2.UseVisualStyleBackColor = True
-        self._button_RunebookMining2.MouseClick += self.Button_RunebookMining2MouseClick
-        #
-        # label_SpazzaturaBackpack
-        #
-        self._label_SpazzaturaBackpack.Location = System.Drawing.Point(6, 62)
-        self._label_SpazzaturaBackpack.Name = "label_SpazzaturaBackpack"
-        self._label_SpazzaturaBackpack.Size = System.Drawing.Size(116, 23)
-        self._label_SpazzaturaBackpack.TabIndex = 10
-        self._label_SpazzaturaBackpack.Text = "Bag Spazzatura"
-        self._label_SpazzaturaBackpack.TextAlign = (
-            System.Drawing.ContentAlignment.MiddleLeft
-        )
-        #
-        # button_SpazzaturaBackpack
-        #
-        self._button_SpazzaturaBackpack.Location = System.Drawing.Point(128, 62)
-        self._button_SpazzaturaBackpack.Name = "button_SpazzaturaBackpack"
-        self._button_SpazzaturaBackpack.Size = System.Drawing.Size(75, 23)
-        self._button_SpazzaturaBackpack.TabIndex = 9
-        self._button_SpazzaturaBackpack.Text = "Get"
-        self._button_SpazzaturaBackpack.UseVisualStyleBackColor = True
-        self._button_SpazzaturaBackpack.MouseClick += (
-            self.Button_SpazzaturaBackpackMouseClick
-        )
-        #
-        # label_Runebook_Casa
-        #
-        self._label_Runebook_Casa.Location = System.Drawing.Point(6, 16)
-        self._label_Runebook_Casa.Name = "label_Runebook_Casa"
-        self._label_Runebook_Casa.Size = System.Drawing.Size(116, 23)
-        self._label_Runebook_Casa.TabIndex = 12
-        self._label_Runebook_Casa.Text = "Runebook Casa"
-        self._label_Runebook_Casa.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        #
-        # button_RunebookCasa
-        #
-        self._button_RunebookCasa.Location = System.Drawing.Point(128, 16)
-        self._button_RunebookCasa.Name = "button_RunebookCasa"
-        self._button_RunebookCasa.Size = System.Drawing.Size(75, 23)
-        self._button_RunebookCasa.TabIndex = 11
-        self._button_RunebookCasa.Text = "Get"
-        self._button_RunebookCasa.UseVisualStyleBackColor = True
-        self._button_RunebookCasa.MouseClick += self.Button_RunebookCasaMouseClick
-        #
-        # label_Lingotti
-        #
-        self._label_Lingotti.Location = System.Drawing.Point(6, 62)
-        self._label_Lingotti.Name = "label_Lingotti"
-        self._label_Lingotti.Size = System.Drawing.Size(116, 23)
-        self._label_Lingotti.TabIndex = 15
-        self._label_Lingotti.Text = "Cassa Lingotti"
-        self._label_Lingotti.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        #
-        # button_Lingotti
-        #
-        self._button_Lingotti.Location = System.Drawing.Point(128, 62)
-        self._button_Lingotti.Name = "button_Lingotti"
-        self._button_Lingotti.Size = System.Drawing.Size(75, 23)
-        self._button_Lingotti.TabIndex = 14
-        self._button_Lingotti.Text = "Get"
-        self._button_Lingotti.UseVisualStyleBackColor = True
-        self._button_Lingotti.MouseClick += self.Button_LingottiMouseClick
-        #
-        # button_Gemme
-        #
-        self._button_Gemme.Location = System.Drawing.Point(128, 85)
-        self._button_Gemme.Name = "button_Gemme"
-        self._button_Gemme.Size = System.Drawing.Size(75, 23)
-        self._button_Gemme.TabIndex = 16
-        self._button_Gemme.Text = "Get"
-        self._button_Gemme.UseVisualStyleBackColor = True
-        self._button_Gemme.MouseClick += self.Button_GemmeMouseClick
-        #
-        # label_SpazzaturaCasa
-        #
-        self._label_SpazzaturaCasa.Location = System.Drawing.Point(6, 108)
-        self._label_SpazzaturaCasa.Name = "label_SpazzaturaCasa"
-        self._label_SpazzaturaCasa.Size = System.Drawing.Size(116, 23)
-        self._label_SpazzaturaCasa.TabIndex = 19
-        self._label_SpazzaturaCasa.Text = "Spazzatura"
-        self._label_SpazzaturaCasa.TextAlign = (
-            System.Drawing.ContentAlignment.MiddleLeft
-        )
-        #
-        # button_SpazzaturaCasa
-        #
-        self._button_SpazzaturaCasa.Location = System.Drawing.Point(128, 108)
-        self._button_SpazzaturaCasa.Name = "button_SpazzaturaCasa"
-        self._button_SpazzaturaCasa.Size = System.Drawing.Size(75, 23)
-        self._button_SpazzaturaCasa.TabIndex = 18
-        self._button_SpazzaturaCasa.Text = "Get"
-        self._button_SpazzaturaCasa.UseVisualStyleBackColor = True
-        self._button_SpazzaturaCasa.MouseClick += self.Button_SpazzaturaCasaMouseClick
-        #
-        # button_FireBeetle
-        #
-        self._button_FireBeetle.Location = System.Drawing.Point(128, 16)
-        self._button_FireBeetle.Name = "button_FireBeetle"
-        self._button_FireBeetle.Size = System.Drawing.Size(75, 23)
-        self._button_FireBeetle.TabIndex = 20
-        self._button_FireBeetle.Text = "Get"
-        self._button_FireBeetle.UseVisualStyleBackColor = True
-        self._button_FireBeetle.MouseClick += self.Button_FireBeetleMouseClick
-        #
-        # label_FireBeetle
-        #
-        self._label_FireBeetle.Location = System.Drawing.Point(6, 16)
-        self._label_FireBeetle.Name = "label_FireBeetle"
-        self._label_FireBeetle.Size = System.Drawing.Size(100, 23)
-        self._label_FireBeetle.TabIndex = 21
-        self._label_FireBeetle.Text = "Fire Beetle"
-        self._label_FireBeetle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        #
-        # label_PosizioneCasa
-        #
-        self._label_PosizioneCasa.Location = System.Drawing.Point(6, 39)
-        self._label_PosizioneCasa.Name = "label_PosizioneCasa"
-        self._label_PosizioneCasa.Size = System.Drawing.Size(116, 23)
-        self._label_PosizioneCasa.TabIndex = 21
-        self._label_PosizioneCasa.Text = "Posizione runa casa"
-        self._label_PosizioneCasa.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        #
-        # label_Gemme
-        #
-        self._label_Gemme.Location = System.Drawing.Point(6, 85)
-        self._label_Gemme.Name = "label_Gemme"
-        self._label_Gemme.Size = System.Drawing.Size(116, 23)
-        self._label_Gemme.TabIndex = 22
-        self._label_Gemme.Text = "Cassa Gemme"
-        self._label_Gemme.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        #
-        # numericUpDown1
-        #
-        self._numericUpDown1.Location = System.Drawing.Point(128, 41)
-        self._numericUpDown1.Name = "numericUpDown1"
-        self._numericUpDown1.Size = System.Drawing.Size(31, 20)
-        self._numericUpDown1.TabIndex = 23
+        # 
+        # label_posizioneRuna
+        # 
+        self._label_posizioneRuna.Location = System.Drawing.Point(6, 13)
+        self._label_posizioneRuna.Name = "label_posizioneRuna"
+        self._label_posizioneRuna.Size = System.Drawing.Size(127, 23)
+        self._label_posizioneRuna.TabIndex = 0
+        self._label_posizioneRuna.Text = "Posizione runa:"
+        self._label_posizioneRuna.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # groupBox_minebook
+        # 
+        self._groupBox_minebook.Controls.Add(self._button_delListaRunebook)
+        self._groupBox_minebook.Controls.Add(self._listBox_Runebook)
+        self._groupBox_minebook.Controls.Add(self._button_addListaRunebook)
+        self._groupBox_minebook.Location = System.Drawing.Point(12, 12)
+        self._groupBox_minebook.Name = "groupBox_minebook"
+        self._groupBox_minebook.Size = System.Drawing.Size(208, 127)
+        self._groupBox_minebook.TabIndex = 6
+        self._groupBox_minebook.TabStop = False
+        self._groupBox_minebook.Text = "Runebook"
+        # 
+        # button_delListaRunebook
+        # 
+        self._button_delListaRunebook.AccessibleName = ""
+        self._button_delListaRunebook.Location = System.Drawing.Point(139, 91)
+        self._button_delListaRunebook.Name = "button_delListaRunebook"
+        self._button_delListaRunebook.Size = System.Drawing.Size(63, 25)
+        self._button_delListaRunebook.TabIndex = 2
+        self._button_delListaRunebook.Text = "Cancella"
+        self._button_delListaRunebook.UseVisualStyleBackColor = True
+        self._button_delListaRunebook.Click += self.Button_delListaRunebookClick
+        # 
+        # listBox_Runebook
+        # 
+        self._listBox_Runebook.FormattingEnabled = True
+        self._listBox_Runebook.ImeMode = System.Windows.Forms.ImeMode.Hangul
+        self._listBox_Runebook.Location = System.Drawing.Point(6, 19)
+        self._listBox_Runebook.Name = "listBox_Runebook"
+        self._listBox_Runebook.Size = System.Drawing.Size(127, 95)
+        self._listBox_Runebook.TabIndex = 0
+        # 
+        # button_addListaRunebook
+        # 
+        self._button_addListaRunebook.AccessibleName = ""
+        self._button_addListaRunebook.Location = System.Drawing.Point(139, 62)
+        self._button_addListaRunebook.Name = "button_addListaRunebook"
+        self._button_addListaRunebook.Size = System.Drawing.Size(63, 25)
+        self._button_addListaRunebook.TabIndex = 1
+        self._button_addListaRunebook.Text = "Aggiungi"
+        self._button_addListaRunebook.UseVisualStyleBackColor = True
+        self._button_addListaRunebook.Click += self.Button_addListaRunebookClick
+        # 
+        # groupBox_runebookCasa
+        # 
+        self._groupBox_runebookCasa.Controls.Add(self._label_runebookCasa)
+        self._groupBox_runebookCasa.Controls.Add(self._button_runeBookCasa)
+        self._groupBox_runebookCasa.Controls.Add(self._label_posizioneRuna)
+        self._groupBox_runebookCasa.Controls.Add( self._numericUpDown1)
+        self._groupBox_runebookCasa.Location = System.Drawing.Point(12, 145)
+        self._groupBox_runebookCasa.Name = "groupBox_runebookCasa"
+        self._groupBox_runebookCasa.Size = System.Drawing.Size(208, 77)
+        self._groupBox_runebookCasa.TabIndex = 22
+        self._groupBox_runebookCasa.TabStop = False
+        self._groupBox_runebookCasa.Text = "Runebook Casa"
+        # 
+        # button_runeBookCasa
+        # 
+        self._button_runeBookCasa.AccessibleName = ""
+        self._button_runeBookCasa.Location = System.Drawing.Point(139, 40)
+        self._button_runeBookCasa.Name = "button_runeBookCasa"
+        self._button_runeBookCasa.Size = System.Drawing.Size(63, 25)
+        self._button_runeBookCasa.TabIndex = 22
+        self._button_runeBookCasa.Text = "Imposta"
+        self._button_runeBookCasa.UseVisualStyleBackColor = True
+        self._button_runeBookCasa.Click += self.Button_runeBookCasaClick
+        # 
+        #  numericUpDown1
+        # 
+        self._numericUpDown1.Location = System.Drawing.Point(139, 16)
+        self._numericUpDown1.Name = "domainUpDown1"
+        self._numericUpDown1.Size = System.Drawing.Size(37, 20)
+        self._numericUpDown1.TabIndex = 3
         self._numericUpDown1.Maximum = 12
         self._numericUpDown1.Minimum = 1
-        #
-        # textBox_Output
-        #
-        self._textBox_Output.Location = System.Drawing.Point(227, 33)
-        self._textBox_Output.Multiline = True
-        self._textBox_Output.Name = "textBox_Output"
-        self._textBox_Output.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        self._textBox_Output.Size = System.Drawing.Size(326, 367)
-        self._textBox_Output.TabIndex = 6
-        #
-        # label_Output
-        #
-        self._label_Output.Font = System.Drawing.Font(
-            "Microsoft Sans Serif",
-            8.25,
-            System.Drawing.FontStyle.Bold,
-            System.Drawing.GraphicsUnit.Point,
-            0,
-        )
-        self._label_Output.Location = System.Drawing.Point(227, 9)
-        self._label_Output.Name = "label_Output"
-        self._label_Output.Size = System.Drawing.Size(101, 13)
-        self._label_Output.TabIndex = 7
-        self._label_Output.Text = "OUTPUT"
-        #
-        # label_Varie
-        #
-        self._label_Varie.Font = System.Drawing.Font(
-            "Microsoft Sans Serif",
-            8.25,
-            System.Drawing.FontStyle.Bold,
-            System.Drawing.GraphicsUnit.Point,
-            0,
-        )
-        self._label_Varie.Location = System.Drawing.Point(559, 9)
-        self._label_Varie.Name = "label_Varie"
-        self._label_Varie.Size = System.Drawing.Size(101, 13)
-        self._label_Varie.TabIndex = 8
-        self._label_Varie.Text = "VARIE"
-        #
-        # checkBox1
-        #
-        self._checkBox1.Location = System.Drawing.Point(98, 16)
-        self._checkBox1.Name = "checkBox1"
-        self._checkBox1.Padding = System.Windows.Forms.Padding(8, 0, 0, 0)
-        self._checkBox1.Size = System.Drawing.Size(24, 24)
-        self._checkBox1.TabIndex = 22
-        self._checkBox1.UseVisualStyleBackColor = True
-        #
+        # 
+        # label_runebookCasa
+        # 
+        self._label_runebookCasa.Location = System.Drawing.Point(6, 42)
+        self._label_runebookCasa.Margin = System.Windows.Forms.Padding(0)
+        self._label_runebookCasa.Name = "label_runebookCasa"
+        self._label_runebookCasa.Size = System.Drawing.Size(127, 23)
+        self._label_runebookCasa.TabIndex = 23
+        self._label_runebookCasa.Text = "Runebook Casa:"
+        self._label_runebookCasa.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # groupBox_casa
+        # 
+        self._groupBox_casa.Controls.Add(self._label_gemme)
+        self._groupBox_casa.Controls.Add(self._label_lingotti)
+        self._groupBox_casa.Controls.Add(self._label_position)
+        self._groupBox_casa.Controls.Add(self._button_position)
+        self._groupBox_casa.Controls.Add(self._button_lingotti)
+        self._groupBox_casa.Controls.Add(self._button_gemme)
+        self._groupBox_casa.Location = System.Drawing.Point(12, 230)
+        self._groupBox_casa.Name = "groupBox_casa"
+        self._groupBox_casa.Size = System.Drawing.Size(208, 116)
+        self._groupBox_casa.TabIndex = 23
+        self._groupBox_casa.TabStop = False
+        self._groupBox_casa.Text = "Casa"
+        # 
+        # button_position
+        # 
+        self._button_position.AccessibleName = ""
+        self._button_position.Location = System.Drawing.Point(139, 14)
+        self._button_position.Name = "button_position"
+        self._button_position.Size = System.Drawing.Size(63, 25)
+        self._button_position.TabIndex = 3
+        self._button_position.Text = "Set"
+        self._button_position.UseVisualStyleBackColor = True
+        self._button_position.Click += self.Button_positionClick
+        # 
+        # button_lingotti
+        # 
+        self._button_lingotti.AccessibleName = ""
+        self._button_lingotti.Location = System.Drawing.Point(139, 45)
+        self._button_lingotti.Name = "button_lingotti"
+        self._button_lingotti.Size = System.Drawing.Size(63, 25)
+        self._button_lingotti.TabIndex = 7
+        self._button_lingotti.Text = "Imposta"
+        self._button_lingotti.UseVisualStyleBackColor = True
+        self._button_lingotti.Click += self.Button_lingottiClick
+        # 
+        # button_gemme
+        # 
+        self._button_gemme.AccessibleName = ""
+        self._button_gemme.Location = System.Drawing.Point(139, 76)
+        self._button_gemme.Name = "button_gemme"
+        self._button_gemme.Size = System.Drawing.Size(63, 25)
+        self._button_gemme.TabIndex = 9
+        self._button_gemme.Text = "Imposta"
+        self._button_gemme.UseVisualStyleBackColor = True
+        self._button_gemme.Click += self.Button_gemmeClick
+        # 
+        # label_position
+        # 
+        self._label_position.Location = System.Drawing.Point(6, 14)
+        self._label_position.Name = "label_position"
+        self._label_position.Size = System.Drawing.Size(127, 23)
+        self._label_position.TabIndex = 24
+        self._label_position.Text = "Posizione di scarico"
+        self._label_position.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # label_lingotti
+        # 
+        self._label_lingotti.Location = System.Drawing.Point(6, 47)
+        self._label_lingotti.Name = "label_lingotti"
+        self._label_lingotti.Size = System.Drawing.Size(127, 23)
+        self._label_lingotti.TabIndex = 25
+        self._label_lingotti.Text = "Cassa lingotti:"
+        self._label_lingotti.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # label_gemme
+        # 
+        self._label_gemme.Location = System.Drawing.Point(6, 76)
+        self._label_gemme.Name = "label_gemme"
+        self._label_gemme.Size = System.Drawing.Size(127, 23)
+        self._label_gemme.TabIndex = 26
+        self._label_gemme.Text = "Cassa gemme:"
+        self._label_gemme.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # groupBox_pet
+        # 
+        self._groupBox_pet.Controls.Add(self._label_fireBeetle)
+        self._groupBox_pet.Controls.Add(self._button_fireBeetle)
+        self._groupBox_pet.Location = System.Drawing.Point(12, 352)
+        self._groupBox_pet.Name = "groupBox_pet"
+        self._groupBox_pet.Size = System.Drawing.Size(208, 50)
+        self._groupBox_pet.TabIndex = 24
+        self._groupBox_pet.TabStop = False
+        self._groupBox_pet.Text = "Pet"
+        # 
+        # button_fireBeetle
+        # 
+        self._button_fireBeetle.AccessibleName = ""
+        self._button_fireBeetle.Location = System.Drawing.Point(139, 14)
+        self._button_fireBeetle.Name = "button_fireBeetle"
+        self._button_fireBeetle.Size = System.Drawing.Size(63, 25)
+        self._button_fireBeetle.TabIndex = 17
+        self._button_fireBeetle.Text = "Imposta"
+        self._button_fireBeetle.UseVisualStyleBackColor = True
+        self._button_fireBeetle.Click += self.Button_fireBeetleClick
+        # 
+        # label_fireBeetle
+        # 
+        self._label_fireBeetle.Location = System.Drawing.Point(6, 16)
+        self._label_fireBeetle.Name = "label_fireBeetle"
+        self._label_fireBeetle.Size = System.Drawing.Size(127, 23)
+        self._label_fireBeetle.TabIndex = 27
+        self._label_fireBeetle.Text = "Fire Beetle"
+        self._label_fireBeetle.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        # 
+        # groupBox_output
+        # 
+        self._groupBox_output.Controls.Add(self._textBox_output)
+        self._groupBox_output.Location = System.Drawing.Point(226, 12)
+        self._groupBox_output.Name = "groupBox_output"
+        self._groupBox_output.Size = System.Drawing.Size(232, 431)
+        self._groupBox_output.TabIndex = 25
+        self._groupBox_output.TabStop = False
+        self._groupBox_output.Text = "Output"
+        # 
+        # textBox_output
+        # 
+        self._textBox_output.Location = System.Drawing.Point(6, 14)
+        self._textBox_output.Multiline = True
+        self._textBox_output.Name = "textBox_output"
+        self._textBox_output.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        self._textBox_output.Size = System.Drawing.Size(220, 411)
+        self._textBox_output.TabIndex = 2
+        # 
+        # button_Run
+        # 
+        self._button_Run.AccessibleName = ""
+        self._button_Run.BackColor = System.Drawing.SystemColors.ControlLight
+        self._button_Run.Location = System.Drawing.Point(272, 449)
+        self._button_Run.Name = "button_Run"
+        self._button_Run.Size = System.Drawing.Size(134, 32)
+        self._button_Run.TabIndex = 28
+        self._button_Run.Text = "Run"
+        self._button_Run.UseVisualStyleBackColor = True
+        self._button_Run.Click += self.Button_RunClick
+        # 
+        # groupBox_extra
+        # 
+        self._groupBox_extra.Controls.Add(self._button_smelta)
+        self._groupBox_extra.Controls.Add(self._button_scarico)
+        self._groupBox_extra.Controls.Add(self._button_daiCibo)
+        self._groupBox_extra.Location = System.Drawing.Point(12, 408)
+        self._groupBox_extra.Name = "groupBox_extra"
+        self._groupBox_extra.Size = System.Drawing.Size(208, 79)
+        self._groupBox_extra.TabIndex = 28
+        self._groupBox_extra.TabStop = False
+        self._groupBox_extra.Text = "Funzioni Extra"
+        # 
+        # button_daiCibo
+        # 
+        self._button_daiCibo.AccessibleName = ""
+        self._button_daiCibo.Location = System.Drawing.Point(6, 19)
+        self._button_daiCibo.Name = "button_daiCibo"
+        self._button_daiCibo.Size = System.Drawing.Size(63, 25)
+        self._button_daiCibo.TabIndex = 17
+        self._button_daiCibo.Text = "Sfama pet"
+        self._button_daiCibo.UseVisualStyleBackColor = True
+        self._button_daiCibo.Click += self.Button_daiCiboClick
+        # 
+        # button_scarico
+        # 
+        self._button_scarico.AccessibleName = ""
+        self._button_scarico.Location = System.Drawing.Point(70, 19)
+        self._button_scarico.Name = "button_scarico"
+        self._button_scarico.Size = System.Drawing.Size(63, 25)
+        self._button_scarico.TabIndex = 29
+        self._button_scarico.Text = "Scarica"
+        self._button_scarico.UseVisualStyleBackColor = True
+        self._button_scarico.Click += self.Button_scaricoClick
+        # 
+        # button_smelta
+        # 
+        self._button_smelta.AccessibleName = ""
+        self._button_smelta.Location = System.Drawing.Point(135, 19)
+        self._button_smelta.Name = "button_smelta"
+        self._button_smelta.Size = System.Drawing.Size(63, 25)
+        self._button_smelta.TabIndex = 30
+        self._button_smelta.Text = "Smelta"
+        self._button_smelta.UseVisualStyleBackColor = True
+        self._button_smelta.Click += self.Button_smeltaClick
+        # 
         # MainForm
-        #
-        self.ClientSize = System.Drawing.Size(780, 468)
-        self.Controls.Add(self._label_Varie)
-        self.Controls.Add(self._label_Output)
-        self.Controls.Add(self._textBox_Output)
-        self.Controls.Add(self._groupBox4)
+        # 
+        self.ClientSize = System.Drawing.Size(470, 499)
+        self.Controls.Add(self._groupBox_extra)
         self.Controls.Add(self._button_Run)
-        self.Controls.Add(self._label_Impostazioni)
-        self.Controls.Add(self._groupBox_Generali)
-        self.Controls.Add(self._groupBox_Casa)
-        self.Controls.Add(self._groupBox_Backpack)
+        self.Controls.Add(self._groupBox_output)
+        self.Controls.Add(self._groupBox_pet)
+        self.Controls.Add(self._groupBox_casa)
+        self.Controls.Add(self._groupBox_runebookCasa)
+        self.Controls.Add(self._groupBox_minebook)
+        self.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         self.Name = "MainForm"
-        self.Text = "GiocoMiner"
+        self.Text = "GiocoMiner 0.5"
         self.TopMost = True
-        self._groupBox_Backpack.ResumeLayout(False)
-        self._groupBox_Casa.ResumeLayout(False)
-        self._groupBox_Generali.ResumeLayout(False)
-        self._numericUpDown1.EndInit()
+        self._groupBox_minebook.ResumeLayout(False)
+        self._groupBox_runebookCasa.ResumeLayout(False)
+        self._groupBox_casa.ResumeLayout(False)
+        self._groupBox_pet.ResumeLayout(False)
+        self._groupBox_output.ResumeLayout(False)
+        self._groupBox_output.PerformLayout()
+        self._groupBox_extra.ResumeLayout(False)
         self.ResumeLayout(False)
-        self.PerformLayout()
- 
-    def Button_RunebookMining1MouseClick(self, sender, e):
-        self.RuneBookMining1 = Target.PromptTarget()
-        self._textBox_Output.AppendText("Primo cammino impostato!\n")
- 
-    def Button_RunebookMining2MouseClick(self, sender, e):
-        self.RuneBookMining2 = Target.PromptTarget()
-        self._textBox_Output.AppendText("Secondo cammino impostato!\n")
- 
-    def Button_SpazzaturaBackpackMouseClick(self, sender, e):
-        self.FoodBag = Target.PromptTarget()
-        self._textBox_Output.AppendText("Bag cibo impostata!\n")
- 
-    #
-    def Button_RunebookCasaMouseClick(self, sender, e):
-        self.RuneBookBanca = Target.PromptTarget()
-        self._textBox_Output.AppendText("Runebook Casa impostata!\n")
- 
-    def Button_LingottiMouseClick(self, sender, e):
-        self.MineBag1 = Target.PromptTarget()
-        self._textBox_Output.AppendText("Cassa lingotti impostata!\n")
- 
-    def Button_GemmeMouseClick(self, sender, e):
-        self.MineBag2 = Target.PromptTarget()
-        self._textBox_Output.AppendText("Cassa gemma impostata!\n")
- 
-    def Button_SpazzaturaCasaMouseClick(self, sender, e):
-        self.SpazzaturaCasa = Target.PromptTarget()
-        self._textBox_Output.AppendText("Spazzatura impostata!\n")
- 
-    #
-    def Button_FireBeetleMouseClick(self, sender, e):
-        self.FireBeetle = Target.PromptTarget()
-        self._textBox_Output.AppendText("Fire Beetle impostato!\n")
- 
-    def Button_RunMouseClick(self, sender, e):
-        SaveSettings(self,self.RuneBookMining1,self.RuneBookMining2,self.FoodBag,self.RuneBookBanca,self._numericUpDown1.Value,self.MineBag1,self.MineBag2,self.SpazzaturaCasa,self.FireBeetle)
-        thread.start_new_thread(main, (self,int(self.RuneBookMining1),int(self.RuneBookMining2),int(self.FoodBag),int(self.RuneBookBanca),self._numericUpDown1.Value,int(self.MineBag1),int(self.MineBag2),int(self.SpazzaturaCasa),int(self.FireBeetle)))
-        #main(self,int(self.RuneBookMining1),int(self.RuneBookMining2),int(self.FoodBag),int(self.RuneBookBanca),self._numericUpDown1.Value,int(self.MineBag1),int(self.MineBag2),int(self.SpazzaturaCasa),int(self.FireBeetle))
+        self._numericUpDown1.EndInit()
+
+    def Button_addListaRunebookClick(self, sender, e):
+        self.settings["RuneBookMining"].append(Target.PromptTarget())
+        self._listBox_Runebook.Items.Add(self.settings["RuneBookMining"][-1])
+
+    def Button_delListaRunebookClick(self, sender, e):
+        selectedIndex = self._listBox_Runebook.SelectedIndex
+        self._listBox_Runebook.Items.RemoveAt(selectedIndex)
+        self.settings["RuneBookMining"].pop(selectedIndex)
+              
+    def Button_runeBookCasaClick(self, sender, e):
+        self.settings["RuneBookBanca"] = Target.PromptTarget()
+        self._textBox_output.AppendText("Runebook Casa impostata!\n")
+
+    def Button_positionClick(self, sender, e):
+        self.settings["PosizioneX"] = Player.Position.X
+        self.settings["PosizioneY"] = Player.Position.Y
+        self.settings["PosizioneZ"] = Player.Position.Z
+        self._textBox_output.AppendText("Posizione di lavoro impostata!\n")
+
+    def Button_lingottiClick(self, sender, e):
+        self.settings["MineBag1"] = Target.PromptTarget()
+        self._textBox_output.AppendText("Cassa lingotti impostata!\n")
+
+    def Button_gemmeClick(self, sender, e):
+        self.settings["MineBag2"] = Target.PromptTarget()
+        self._textBox_output.AppendText("Cassa gemma impostata!\n")
+
+    def Button_fireBeetleClick(self, sender, e):
+        self.settings["FireBeetle"] = Target.PromptTarget()
+        self._textBox_output.AppendText("Fire Beetle impostato!\n")
+
+    def Button_daiCiboClick(self, sender, e):
+        dismount()
+        giveFood(self.settings["FireBeetle"])
+
+    def Button_scaricoClick(self, sender, e):
+        pass
+
+    def Button_smeltaClick(self, sender, e):
+        dismount()
+        smelta(settings["FireBeetle"])
+
+    def Button_RunClick(self, sender, e):
+        self.settings["NumRunaCasa"] = self._numericUpDown1.Value
+        SaveSettings(**self.settings)
+        thread.start_new_thread(main, (self, ), (self.settings))
+        #main(self,**self.settings)
+
     def writeTextBox(self,stringa):
         stringa = str(stringa)
-        self._textBox_Output.AppendText((stringa + "\n"))
+        self._textBox_output.AppendText((stringa + "\n"))
          
     def ReadSettings(self):
         try:
-            with open ('GiocoMinerSettings.txt', 'r') as f:
-                with open("GiocoMinerSettings.txt") as in_file:
-                    self.writeTextBox("File impostazioni trovato.Carico...")
-                    self.writeTextBox("Le impostazioni vengono salvate in automatico al RUN.")
-                    my_lines = in_file.readlines()
-                    self.RuneBookMining1 = my_lines[0].strip()
-                    self.RuneBookMining2 = my_lines[1].strip()
-                    self.FoodBag = my_lines[2].strip()
-                    self.RuneBookBanca = my_lines[3].strip()
-                    self.PosizioneRunaCasa = int(my_lines[4])
-                    self.MineBag1 = my_lines[5].strip()
-                    self.MineBag2 = my_lines[6].strip()
-                    self.SpazzaturaCasa = my_lines[7].strip()
-                    self.FireBeetle = my_lines[8].strip()
-                    self._numericUpDown1.Value = self.PosizioneRunaCasa
+            with open("GiocoMinerSettings3.txt") as in_file:
+                self.writeTextBox("File impostazioni trovato.Carico...")
+                self.writeTextBox("Le impostazioni vengono salvate in automatico al RUN.")
+                my_lines = in_file.readlines()
+                self.settings["RuneBookMining"] = my_lines[0].strip() 
+                self.settings["RuneBookMining"] = self.settings["RuneBookMining"].split("-") #split at -
+                self.settings["RuneBookMining"].pop(len(self.settings["RuneBookMining"])-1) #delete last string after the - that is void
+                self.settings["RuneBookMining"] = map(int, self.settings["RuneBookMining"]) #trasformiamo tutto in int
+                self.settings["RuneBookBanca"] = int(my_lines[1].strip())
+                self.settings["NumRunaCasa"] = int(my_lines[2])
+                self.settings["PosizioneX"] = int(my_lines[3])
+                self.settings["PosizioneY"] = int(my_lines[4])
+                self.settings["PosizioneZ"] = int(my_lines[5])
+                self.settings["MineBag1"] = int(my_lines[6].strip())
+                self.settings["MineBag2"] = int(my_lines[7].strip())
+                self.settings["FireBeetle"] = int(my_lines[8].strip())
+                self._numericUpDown1.Value = self.settings["NumRunaCasa"]
+                for runebookmining in self.settings["RuneBookMining"]:
+                    self._listBox_Runebook.Items.Add(runebookmining)
+                #self._listBox_Runebook.Items.Add(self.settings["RuneBookMining"][-1])
         except IOError:
             self.writeTextBox("File impostazioni NON TROVATO!!!")
             self.writeTextBox("Imposta le varie cose e poi runna il programma")
             self.writeTextBox("Non Dimenticarti NULLA!!!!")
- 
-def createFood(FoodBag):
+
+def createFood(cibo):    
+    listaCibo=["sausage","cut of ribs","a ham","a cooked bird","a wedge of cheese","a peach","an apple","a fish steak","a grape bunch","muffins"]
+    for xcibo in cibo:
+        listaCibo.remove(xcibo)
     Journal.Clear()
-    form.writeTextBox("Creo da mangiare al piccolo. Aspetta un attimo...")
-    while True:
+    repeat = True
+    while repeat:
+        timeout=10000 
         Spells.CastMagery("Create Food")
-        Misc.Pause(3000)
-        if (Journal.Search("sausage") or Journal.Search("cut of ribs") or Journal.Search("a ham") or Journal.Search("a cooked bird")):
-            moveFood(FoodBag)
-            break
+        while timeout>0 and repeat: 
+            for food in cibo:
+                if Journal.Search(food):
+                    moveFood()
+                    return
+            if repeat:
+                for food in listaCibo:
+                    if Journal.Search(food):
+                        Misc.Pause(1500)
+                        createFood(cibo)
+            timeout-=100
+            Misc.Pause(50)
                
-def moveFood(FoodBag):
+def moveFood():
+    NoFoodID = [0x097D, 0x09D2, 0x09D0, 0x09D1, 0x09EB, 0x097B]
     for item in Player.Backpack.Contains:
-        for xfoodID in AllFood: 
+        for xfoodID in NoFoodID: 
             if item.ItemID == xfoodID:
-                form.writeTextBox("Sposto cibo nella bag")
-                Items.Move(item, FoodBag, 0)
+                Items.WaitForContents(item, TimeoutOnWaitAction)
+                form.writeTextBox("Butto cibo a terra")
+                Items.DropItemGroundSelf(item, 0)
                 Misc.Pause(DragDelay)
    
-def giveFood(FoodBag,FireBeetle):
-    food = Items.FindBySerial(FoodBag)
-    for item in food.Contains:
+def giveFood(FireBeetle):
+    SiFoodID = [0x09C9, 0x09F2, 0x09B7, 0x09C0]
+    for item in Player.Backpack.Contains:        
         for petfood in SiFoodID:
             if item.ItemID == petfood:
+                Items.WaitForContents(item, TimeoutOnWaitAction)
                 Items.Move(item, FireBeetle, 0)
                 Misc.Pause(DragDelay)
                 return
-    form.writeTextBox("Sposto cibo inutile nella bag spazzatura.")
-    createFood(FoodBag)
-    giveFood(FoodBag,FireBeetle)
+    createFood(["sausage","cut of ribs","a ham","a cooked bird"])
+    giveFood(FireBeetle)
         
    
-def smelta(FireBeetle):
-    form.writeTextBox("Fammi Smeltare...")
+def smelta(FireBeetle): 
+    oreID = [0x19B7, 0x19B8, 0x19B9, 0x19BA]  
     if Player.Weight >= WeightLimit - 130:
+        form.writeTextBox("Fammi Smeltare...")
         if Target.HasTarget(): Target.Cancel()
-        for item in Player.Backpack.Contains:
+        for item in Player.Backpack.Contains:            
             for xoreID in oreID:
                 if item.ItemID == xoreID:
-                    Items.UseItem(item)
-                    Target.WaitForTarget(2000,False)
-                    Target.TargetExecute(FireBeetle)
-                    Misc.Pause(200)
-    form.writeTextBox("Il piccolo ha sciolto tutto")
+                    Items.WaitForContents(item, TimeoutOnWaitAction)
+                    if(item.Weight >=4):
+                        Items.WaitForContents(item, TimeoutOnWaitAction)                       
+                        Items.UseItem(item)
+                        Target.WaitForTarget(TimeoutOnWaitAction,False)
+                        Target.TargetExecute(FireBeetle)
+                        Misc.Pause(200)
+        form.writeTextBox("Il piccolo ha sciolto tutto")
    
 def dismount():
     form.writeTextBox("Dismount dal beetle")
@@ -551,7 +534,7 @@ def MakePickaxe():
     if Items.BackpackCount(tinkerID, -1) == 0:
         form.writeTextBox("ERRORE: Non hai il Tinker Tool. Vallo a comprare e ricominciamo")
         return
-    if Items.BackpackCount(pickaxeID, -1) >= 2: ####DASISTEMARE
+    if Items.BackpackCount(pickaxeID, -1) >= 5: ####DASISTEMARE
         return
     else:
         Items.UseItemByID(tinkerID,-1) #usa il tinker tool
@@ -574,7 +557,13 @@ def MakeTinkerTool():
         Gumps.SendAction(949095101, 0) # close
         form.writeTextBox("Ho costruito un Tinker Tool... Quanto so bravo?")
    
-def Scarico(RuneBookBanca,MineBag1,MineBag2,FoodBag,SpazzaturaCasa,lastrune,PosizioneRunaCasa):
+def Scarico(lastrune,**settings):
+    gemmaID = [0x3195, 0x3193, 0x3194, 0x3192, 0x3198, 0x3197]
+    ingotID = 0x1BF2
+    RuneBookCasa=settings["RuneBookBanca"]
+    PosizioneRunaCasa=settings["NumRunaCasa"]
+    MineBag1=settings["MineBag1"]
+    MineBag2=settings["MineBag2"]
     if Player.Weight >= WeightLimit - 120:
         form.writeTextBox("Sono un pò appesantito. Vado a scaricare")
         if Target.HasTarget(): Target.Cancel()
@@ -582,34 +571,30 @@ def Scarico(RuneBookBanca,MineBag1,MineBag2,FoodBag,SpazzaturaCasa,lastrune,Posi
         waitForMana()
         while True:
             Gumps.ResetGump()
-            Items.UseItem(RuneBookBanca)
+            Items.UseItem(RuneBookCasa)
             Gumps.WaitForGump(1431013363, TimeoutOnWaitAction)
             Gumps.SendAction(1431013363, PosizioneRunaCasa*6-1)
             Misc.Pause(RecallPause)
             if not (Journal.Search(noLrc) or Journal.Search(noMana)):
                 break
-            Journal.Clear()
+        Player.PathFindTo(settings["PosizioneX"], settings["PosizioneY"], settings["PosizioneZ"])
+        Misc.Pause(400)
         for item in Player.Backpack.Contains:
-            #for xoreID in oreID:
-                if item.ItemID == ingotID:
-                    form.writeTextBox("--> Sposto lingotti")
-                    Items.Move(item, MineBag1, 0)
-                    Misc.Pause(DragDelay)
+            if item.ItemID == ingotID:
+                Items.WaitForContents(item, TimeoutOnWaitAction)
+                form.writeTextBox("--> Sposto lingotti")
+                Items.Move(item, MineBag1, 0)
+                Misc.Pause(DragDelay)
         for item in Player.Backpack.Contains:
             for xgemmaID in gemmaID:
                 if item.ItemID == xgemmaID:
+                    Items.WaitForContents(item, TimeoutOnWaitAction)
                     form.writeTextBox("--> Sposto gemme")
                     Items.Move(item, MineBag2, 0)
                     Misc.Pause(DragDelay)       
-        xFoodBag = Items.FindBySerial(FoodBag)
-        for item in xFoodBag.Contains:
-            for xfoodID in NoFoodID: 
-                if item.ItemID == xfoodID:
-                    form.writeTextBox("--> Sposto Cibo inutile")
-                    Items.Move(item, SpazzaturaCasa, 0)
-                    Misc.Pause(DragDelay)
         form.writeTextBox("Ho scaricato tutto. Adesso si che mi sento bene")
-        return lastrune - 6
+        if lastrune !=5:
+            return lastrune - 6
     return lastrune
    
 def RecallNextSpot(RuneBookMining1,lastrune):
@@ -627,65 +612,105 @@ def RecallNextSpot(RuneBookMining1,lastrune):
         Journal.Clear()
     Journal.Clear()
    
-def Mina():
+def Mina(FireBeetle):
     tileinfo = Statics.GetStaticsTileInfo(Player.Position.X, Player.Position.Y, Player.Map)
     if tileinfo.Count > 0:
-        minaCava()
+        minaCava(FireBeetle)
     else:
-        minaMontagna()
+        minaMontagna(FireBeetle)
                        
                        
-def minaCava():
-    uscitaDiSicurezza = 15
-    Journal.Clear()
-    tileinfo = Statics.GetStaticsTileInfo(Player.Position.X, Player.Position.Y, Player.Map)
-    for tile in tileinfo:
-        if tile.StaticID > 1000 and tile.StaticID < 3000 and tile.StaticZ == Player.Position.Z :
-            for x in range(-1,2):
-                Journal.Clear()
-                for y in range(-1,2):
-                    Journal.Clear()                
-                    Items.UseItemByID(pickaxeID,-1)
-                    Target.WaitForTarget(2000,False)
-                    Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,0,tile.StaticID)
-                    Misc.Pause(300)
-                    if (Journal.Search(noMetal)):
-                        Misc.SendMessage("NoMetallo")
-                        if Target.HasTarget(): Target.Cancel()
-                        break
-                    if (Journal.Search("You dig some") or Journal.Search("You loosen")):
-                        while not(Journal.Search(noMetal) or Journal.Search(youcant) or Journal.Search(cantseen) or uscitaDiSicurezza<1):
-                            Items.UseItemByID(pickaxeID,-1)
-                            Target.WaitForTarget(2000,False)
-                            Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,0,tile.StaticID)
-                            uscitaDiSicurezza-=1
-                            Misc.Pause(500)
-def minaMontagna():
-    uscitaDiSicurezza = 15
-    for x in range(-1,2):
+def minaCava(FireBeetle):
+    digable = (220,221,222,223,224,225,226,227,228,229,230,231,236,237,238,239,240,241,242,243,244,245,246,247,252,253,254,255,256,257,258,259,260,261,262,263,268,269,270,271,272,273,274,275,276,277,278,279,286,287,288,289,290,291,292,293,294,296,296,297,321,322,323,324,467,468,469,470,471,472,473,474,476,477,478,479,480,481,482,483,484,485,486,487,492,493,494,495,543,544,545,546,547,548,549,550,551,552,553,554,555,556,557,558,559,560,561,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,578,579,581,582,583,584,585,586,587,588,589,590,591,592,593,594,595,596,597,598,599,600,601,610,611,612,613,1010,1741,1742,1743,1744,1745,1746,1747,1748,1749,1750,1751,1752,1753,1754,1755,1756,1757,1771,1772,1773,1774,1775,1776,1777,1778,1779,1780,1781,1782,1783,1784,1785,1786,1787,1788,1789,1790,1801,1802,1803,1804,1805,1806,1807,1808,1809,1811,1812,1813,1814,1815,1816,1817,1818,1819,1820,1821,1822,1823,1824,1831,1832,1833,1834,1835,1836,1837,1838,1839,1840,1841,1842,1843,1844,1845,1846,1847,1848,1849,1850,1851,1852,1853,1854,1861,1862,1863,1864,1865,1866,1867,1868,1869,1870,1871,1872,1873,1874,1875,1876,1877,1878,1879,1880,1881,1882,1883,1884,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2028,2029,2030,2031,2032,2033,2100,2101,2102,2103,2104,2105,1339,1340,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359)
+    for x in range(-2,3):
+        for y in range(-2,3):
+            tileinfo = Statics.GetStaticsTileInfo(Player.Position.X+x, Player.Position.Y+y, Player.Map)
+            for tile in tileinfo:
+                if tile.StaticID in digable and tile.StaticZ == Player.Position.Z :
+                    rimina=True
+                    while rimina:
+                        Journal.Clear()
+                        timeout=10000
+                        if Player.Weight>=Player.MaxWeight-50:
+                            smelta(FireBeetle)
+                        Items.UseItemByID(pickaxeID,-1)
+                        Target.WaitForTarget(TimeoutOnWaitAction,False)
+                        Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,Player.Position.Z,tile.StaticID)
+                        while timeout>0:                                 
+                            if (Journal.Search("You dig some") or Journal.Search("You loosen")):
+                                rimina=True
+                                break 
+                            elif (Journal.Search(noMetal) or Journal.Search(youcant) or Journal.Search(cantseen)): 
+                                rimina=False
+                                break
+                            else:
+                                timeout-=100
+                                Misc.Pause(50)
+
+def minaMontagna(FireBeetle):
+    puntiBuoni = {}
+    try:
+        with open('testdata.data', 'rb') as handle:
+            puntiBuoni = pickle.load(handle)
+    except:
+        form.writeTextBox("File dei dati non esistente. Creo")
+
+    if str(Player.Position) in puntiBuoni:
         Journal.Clear()
-        for y in range(-1,2):
-            Journal.Clear() 
-            Items.UseItemByID(pickaxeID,-1)
-            Target.WaitForTarget(2000,False)
-            Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,Player.Position.Z)
-            Misc.Pause(300)
-            if (Journal.Search(noMetal)):
-                form.writeTextBox("No metal")
-                if Target.HasTarget(): Target.Cancel()
-                break
-            if (Journal.Search("You dig some") or Journal.Search("You loosen")):
-                while not(Journal.Search(noMetal) or Journal.Search(youcant) or Journal.Search(cantseen) or uscitaDiSicurezza<1):
-                    Items.UseItemByID(pickaxeID,-1)
-                    Target.WaitForTarget(2000,False)
-                    Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,Player.Position.Z)
-                    uscitaDiSicurezza-=1
-                    Misc.Pause(500)
+        rimina = True
+        form.writeTextBox("Trovato spot memorizzato. Piccono i punti conosciuti")
+        for x in puntiBuoni[str(Player.Position)]:
+            while rimina:
+                Journal.Clear()
+                timeout=10000
+                if Player.Weight>=Player.MaxWeight-50:
+                    smelta(FireBeetle)
+                Items.UseItemByID(pickaxeID,-1)
+                Target.WaitForTarget(TimeoutOnWaitAction,False)
+                Target.TargetExecute( int((x[1:len(x)-1]).split(", ")[0]), int((x[1:len(x)-1]).split(", ")[1]), 0)
+                while timeout>0:                                 
+                    if (Journal.Search("You dig some") or Journal.Search("You loosen")):
+                        rimina=True
+                        break
+                    elif (Journal.Search(noMetal) or Journal.Search(youcant) or Journal.Search(cantseen)): 
+                        rimina=False
+                        break #shifta
+                    else:
+                        timeout-=100
+                        Misc.Pause(50)
+    else:
+        for x in range(-2,3):
+            for y in range(-2,3):
+                punto = Statics.GetLandID(Player.Position.X+x,Player.Position.Y+y,Player.Map)
+                if(Statics.GetTileFlag(punto, "Wall")):
+                    rimina=True
+                    while rimina:
+                        Journal.Clear()
+                        timeout=10000
+                        if Player.Weight>=Player.MaxWeight-50:
+                            smelta(FireBeetle)
+                        Items.UseItemByID(pickaxeID,-1)
+                        Target.WaitForTarget(TimeoutOnWaitAction,False)
+                        Target.TargetExecute(Player.Position.X+x,Player.Position.Y+y,0)
+                        while timeout>0:                                 
+                            if (Journal.Search("You dig some") or Journal.Search("You loosen")):
+                                rimina=True
+                                puntiBuoni.setdefault(str(Player.Position),[]).append("("+str(Player.Position.X+x)+", " +str(Player.Position.Y+y)+ ", " +str(0)+ ")")
+                                break 
+                            elif (Journal.Search(noMetal) or Journal.Search(youcant) or Journal.Search(cantseen)): 
+                                rimina=False
+                                break
+                            else:
+                                timeout-=100
+                                Misc.Pause(50)
+    #SCRIVE FILE                        
+    with open("testdata.data",'wb') as fp:
+        pickle.dump(puntiBuoni,fp)
  
  
 def getNumRuneRunebook(runeBookSerial): 
     Items.UseItem(runeBookSerial)
-    Gumps.WaitForGump(1431013363, 3000)
+    Gumps.WaitForGump(1431013363, 10000)
     Misc.Pause(100)
     listaBook = Gumps.LastGumpGetLineList( )
     newListaBook = []
@@ -697,56 +722,50 @@ def getNumRuneRunebook(runeBookSerial):
  
 form = MainForm()
          
-def SaveSettings(form,RuneBookMining1,RuneBookMining2,FoodBag,RuneBookBanca,PosizioneRunaCasa,MineBag1,MineBag2,SpazzaturaCasa,FireBeetle):    
-        with open("GiocoMinerSettings.txt", "w") as out_file:
-                out_file.write(str(RuneBookMining1))
-                out_file.write("\n")
-                out_file.write(str(RuneBookMining2))
-                out_file.write("\n")
-                out_file.write(str(FoodBag))
-                out_file.write("\n")
-                out_file.write(str(RuneBookBanca))
-                out_file.write("\n")
-                out_file.write(str(form._numericUpDown1.Value))
-                out_file.write("\n")
-                out_file.write(str(MineBag1))
-                out_file.write("\n")
-                out_file.write(str(MineBag2))
-                out_file.write("\n")
-                out_file.write(str(SpazzaturaCasa))
-                out_file.write("\n")
-                out_file.write(str(FireBeetle))
+def SaveSettings(**settings):    
+        with open("GiocoMinerSettings3.txt", "w") as out_file:
+            for x in settings["RuneBookMining"]:
+                out_file.write(str(x))
+                out_file.write("-")
+            out_file.write("\n")
+            out_file.write(str(settings["RuneBookBanca"]))
+            out_file.write("\n")
+            out_file.write(str(settings["NumRunaCasa"]))
+            out_file.write("\n")
+            out_file.write(str(settings["PosizioneX"]))
+            out_file.write("\n")
+            out_file.write(str(settings["PosizioneY"]))
+            out_file.write("\n")
+            out_file.write(str(settings["PosizioneZ"]))
+            out_file.write("\n")
+            out_file.write(str(settings["MineBag1"]))
+            out_file.write("\n")
+            out_file.write(str(settings["MineBag2"]))
+            out_file.write("\n")
+            out_file.write(str(settings["FireBeetle"]))
  
-                 
- 
-def main(form,RuneBookMining1,RuneBookMining2,FoodBag,RuneBookBanca,PosizioneRunaCasa,MineBag1,MineBag2,SpazzaturaCasa,FireBeetle):
+def main(form,**settings):
     lastrune  = 5   
-    NumeroRuneMiningBook1 = getNumRuneRunebook(RuneBookMining1)
-    NumeroRuneMiningBook2 = getNumRuneRunebook(RuneBookMining2)
+    NumeroRuneMiningBook1 = getNumRuneRunebook(settings["RuneBookMining"][0])
     form.writeTextBox("START GiocoMiner")
     dismount()
-    giveFood(FoodBag,FireBeetle)
+    giveFood(settings["FireBeetle"])
     while True:
-        smelta(FireBeetle)
+        smelta(settings["FireBeetle"])
         MakeTinkerTool()
         MakePickaxe()
-        lastrune = Scarico(RuneBookBanca,MineBag1,MineBag2,FoodBag,SpazzaturaCasa,lastrune,PosizioneRunaCasa)
+        lastrune = Scarico(lastrune,**settings)
         #SWITCH
-        if lastrune >= ((6*NumeroRuneMiningBook1)-1):
-            RuneBookTemp = RuneBookMining1
-            RuneBookMining1 = RuneBookMining2
-            RuneBookMining2 = RuneBookTemp
-            NumeroRuneMiningBookTemp = NumeroRuneMiningBook1
-            NumeroRuneMiningBook1 = NumeroRuneMiningBook2
-            NumeroRuneMiningBook2 = NumeroRuneMiningBookTemp
+        if lastrune >= ((6*NumeroRuneMiningBook1)-1): #when we arrive at the end of the runebook
+            settings["RuneBookMining"].append(settings["RuneBookMining"].pop(0)) # delete the first and put at the end
+            NumeroRuneMiningBook1=getNumRuneRunebook(settings["RuneBookMining"][0]) # count the number of rune on new runebook
+            lastrune = 5 #reset
             form.writeTextBox("Passiamo al prossimo Runebook")
-            lastrune = 5 
-        RecallNextSpot(RuneBookMining1,lastrune)
-        lastrune = lastrune + 6
-         
-         
+            giveFood(settings["FireBeetle"])
+        RecallNextSpot(settings["RuneBookMining"][0],lastrune)
+        lastrune = lastrune + 6    
         waitForMana()
-        Mina()
+        Mina(settings["FireBeetle"])
  
 form.ReadSettings()
 Application.Run(form)
