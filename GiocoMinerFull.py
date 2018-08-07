@@ -1,12 +1,10 @@
 import clr
-clr.AddReference("System")
+
 clr.AddReference("System.Drawing")
 clr.AddReference("System.Windows.Forms")
-import System.Drawing
-import System.Windows.Forms
 
-from System.Drawing import *
-from System.Windows.Forms import *
+from System.Drawing import Point, Size, ContentAlignment, SystemColors
+from System.Windows.Forms import Application, Form, Label, GroupBox, Button, ListBox, NumericUpDown, TextBox, ImeMode, Padding, ScrollBars, FormBorderStyle
 import thread
 import cPickle as pickle
 
@@ -42,57 +40,50 @@ class MainForm(Form):
                         "FireBeetle" : None,
                         "Posizione" : None
                         }
-        self._label_posizioneRuna = System.Windows.Forms.Label()
-        self._groupBox_minebook = System.Windows.Forms.GroupBox()
-        self._button_delListaRunebook = System.Windows.Forms.Button()
-        self._listBox_Runebook = System.Windows.Forms.ListBox()
-        self._button_addListaRunebook = System.Windows.Forms.Button()
-        self._groupBox_runebookCasa = System.Windows.Forms.GroupBox()
-        self._button_runeBookCasa = System.Windows.Forms.Button()
-        self._numericUpDown1 = System.Windows.Forms.NumericUpDown()
-        self._label_runebookCasa = System.Windows.Forms.Label()
-        self._groupBox_casa = System.Windows.Forms.GroupBox()
-        self._button_position = System.Windows.Forms.Button()
-        self._button_lingotti = System.Windows.Forms.Button()
-        self._button_gemme = System.Windows.Forms.Button()
-        self._label_position = System.Windows.Forms.Label()
-        self._label_lingotti = System.Windows.Forms.Label()
-        self._label_gemme = System.Windows.Forms.Label()
-        self._groupBox_pet = System.Windows.Forms.GroupBox()
-        self._button_fireBeetle = System.Windows.Forms.Button()
-        self._label_fireBeetle = System.Windows.Forms.Label()
-        self._groupBox_output = System.Windows.Forms.GroupBox()
-        self._textBox_output = System.Windows.Forms.TextBox()
-        self._button_Run = System.Windows.Forms.Button()
-        self._groupBox_extra = System.Windows.Forms.GroupBox()
-        self._button_daiCibo = System.Windows.Forms.Button()
-        self._button_scarico = System.Windows.Forms.Button()
-        self._button_smelta = System.Windows.Forms.Button()
-        self._groupBox_minebook.SuspendLayout()
-        self._groupBox_runebookCasa.SuspendLayout()
-        self._groupBox_casa.SuspendLayout()
-        self._groupBox_pet.SuspendLayout()
-        self._groupBox_output.SuspendLayout()
-        self._groupBox_extra.SuspendLayout()
-        self.SuspendLayout()
+        self._label_posizioneRuna = Label()
+        self._groupBox_minebook = GroupBox()
+        self._button_delListaRunebook = Button()
+        self._listBox_Runebook = ListBox()
+        self._button_addListaRunebook = Button()
+        self._groupBox_runebookCasa = GroupBox()
+        self._button_runeBookCasa = Button()
+        self._numericUpDown1 = NumericUpDown()
+        self._label_runebookCasa = Label()
+        self._groupBox_casa = GroupBox()
+        self._button_position = Button()
+        self._button_lingotti = Button()
+        self._button_gemme = Button()
+        self._label_position = Label()
+        self._label_lingotti = Label()
+        self._label_gemme = Label()
+        self._groupBox_pet = GroupBox()
+        self._button_fireBeetle = Button()
+        self._label_fireBeetle = Label()
+        self._groupBox_output = GroupBox()
+        self._textBox_output = TextBox()
+        self._button_Run = Button()
+        self._groupBox_extra = GroupBox()
+        self._button_daiCibo = Button()
+        self._button_scarico = Button()
+        self._button_smelta = Button()
         # 
         # label_posizioneRuna
         # 
-        self._label_posizioneRuna.Location = System.Drawing.Point(6, 13)
+        self._label_posizioneRuna.Location = Point(6, 13)
         self._label_posizioneRuna.Name = "label_posizioneRuna"
-        self._label_posizioneRuna.Size = System.Drawing.Size(127, 23)
+        self._label_posizioneRuna.Size = Size(127, 23)
         self._label_posizioneRuna.TabIndex = 0
         self._label_posizioneRuna.Text = "Posizione runa:"
-        self._label_posizioneRuna.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_posizioneRuna.TextAlign = ContentAlignment.MiddleRight
         # 
         # groupBox_minebook
         # 
         self._groupBox_minebook.Controls.Add(self._button_delListaRunebook)
         self._groupBox_minebook.Controls.Add(self._listBox_Runebook)
         self._groupBox_minebook.Controls.Add(self._button_addListaRunebook)
-        self._groupBox_minebook.Location = System.Drawing.Point(12, 12)
+        self._groupBox_minebook.Location = Point(12, 12)
         self._groupBox_minebook.Name = "groupBox_minebook"
-        self._groupBox_minebook.Size = System.Drawing.Size(208, 127)
+        self._groupBox_minebook.Size = Size(208, 127)
         self._groupBox_minebook.TabIndex = 6
         self._groupBox_minebook.TabStop = False
         self._groupBox_minebook.Text = "Runebook"
@@ -100,9 +91,9 @@ class MainForm(Form):
         # button_delListaRunebook
         # 
         self._button_delListaRunebook.AccessibleName = ""
-        self._button_delListaRunebook.Location = System.Drawing.Point(139, 91)
+        self._button_delListaRunebook.Location = Point(139, 91)
         self._button_delListaRunebook.Name = "button_delListaRunebook"
-        self._button_delListaRunebook.Size = System.Drawing.Size(63, 25)
+        self._button_delListaRunebook.Size = Size(63, 25)
         self._button_delListaRunebook.TabIndex = 2
         self._button_delListaRunebook.Text = "Cancella"
         self._button_delListaRunebook.UseVisualStyleBackColor = True
@@ -111,18 +102,18 @@ class MainForm(Form):
         # listBox_Runebook
         # 
         self._listBox_Runebook.FormattingEnabled = True
-        self._listBox_Runebook.ImeMode = System.Windows.Forms.ImeMode.Hangul
-        self._listBox_Runebook.Location = System.Drawing.Point(6, 19)
+        self._listBox_Runebook.ImeMode = ImeMode.Hangul
+        self._listBox_Runebook.Location = Point(6, 19)
         self._listBox_Runebook.Name = "listBox_Runebook"
-        self._listBox_Runebook.Size = System.Drawing.Size(127, 95)
+        self._listBox_Runebook.Size = Size(127, 95)
         self._listBox_Runebook.TabIndex = 0
         # 
         # button_addListaRunebook
         # 
         self._button_addListaRunebook.AccessibleName = ""
-        self._button_addListaRunebook.Location = System.Drawing.Point(139, 62)
+        self._button_addListaRunebook.Location = Point(139, 62)
         self._button_addListaRunebook.Name = "button_addListaRunebook"
-        self._button_addListaRunebook.Size = System.Drawing.Size(63, 25)
+        self._button_addListaRunebook.Size = Size(63, 25)
         self._button_addListaRunebook.TabIndex = 1
         self._button_addListaRunebook.Text = "Aggiungi"
         self._button_addListaRunebook.UseVisualStyleBackColor = True
@@ -134,9 +125,9 @@ class MainForm(Form):
         self._groupBox_runebookCasa.Controls.Add(self._button_runeBookCasa)
         self._groupBox_runebookCasa.Controls.Add(self._label_posizioneRuna)
         self._groupBox_runebookCasa.Controls.Add( self._numericUpDown1)
-        self._groupBox_runebookCasa.Location = System.Drawing.Point(12, 145)
+        self._groupBox_runebookCasa.Location = Point(12, 145)
         self._groupBox_runebookCasa.Name = "groupBox_runebookCasa"
-        self._groupBox_runebookCasa.Size = System.Drawing.Size(208, 77)
+        self._groupBox_runebookCasa.Size = Size(208, 77)
         self._groupBox_runebookCasa.TabIndex = 22
         self._groupBox_runebookCasa.TabStop = False
         self._groupBox_runebookCasa.Text = "Runebook Casa"
@@ -144,9 +135,9 @@ class MainForm(Form):
         # button_runeBookCasa
         # 
         self._button_runeBookCasa.AccessibleName = ""
-        self._button_runeBookCasa.Location = System.Drawing.Point(139, 40)
+        self._button_runeBookCasa.Location = Point(139, 40)
         self._button_runeBookCasa.Name = "button_runeBookCasa"
-        self._button_runeBookCasa.Size = System.Drawing.Size(63, 25)
+        self._button_runeBookCasa.Size = Size(63, 25)
         self._button_runeBookCasa.TabIndex = 22
         self._button_runeBookCasa.Text = "Imposta"
         self._button_runeBookCasa.UseVisualStyleBackColor = True
@@ -154,22 +145,22 @@ class MainForm(Form):
         # 
         #  numericUpDown1
         # 
-        self._numericUpDown1.Location = System.Drawing.Point(139, 16)
+        self._numericUpDown1.Location = Point(139, 16)
         self._numericUpDown1.Name = "domainUpDown1"
-        self._numericUpDown1.Size = System.Drawing.Size(37, 20)
+        self._numericUpDown1.Size = Size(37, 20)
         self._numericUpDown1.TabIndex = 3
         self._numericUpDown1.Maximum = 12
         self._numericUpDown1.Minimum = 1
         # 
         # label_runebookCasa
         # 
-        self._label_runebookCasa.Location = System.Drawing.Point(6, 42)
-        self._label_runebookCasa.Margin = System.Windows.Forms.Padding(0)
+        self._label_runebookCasa.Location = Point(6, 42)
+        self._label_runebookCasa.Margin = Padding(0)
         self._label_runebookCasa.Name = "label_runebookCasa"
-        self._label_runebookCasa.Size = System.Drawing.Size(127, 23)
+        self._label_runebookCasa.Size = Size(127, 23)
         self._label_runebookCasa.TabIndex = 23
         self._label_runebookCasa.Text = "Runebook Casa:"
-        self._label_runebookCasa.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_runebookCasa.TextAlign = ContentAlignment.MiddleRight
         # 
         # groupBox_casa
         # 
@@ -179,9 +170,9 @@ class MainForm(Form):
         self._groupBox_casa.Controls.Add(self._button_position)
         self._groupBox_casa.Controls.Add(self._button_lingotti)
         self._groupBox_casa.Controls.Add(self._button_gemme)
-        self._groupBox_casa.Location = System.Drawing.Point(12, 230)
+        self._groupBox_casa.Location = Point(12, 230)
         self._groupBox_casa.Name = "groupBox_casa"
-        self._groupBox_casa.Size = System.Drawing.Size(208, 116)
+        self._groupBox_casa.Size = Size(208, 116)
         self._groupBox_casa.TabIndex = 23
         self._groupBox_casa.TabStop = False
         self._groupBox_casa.Text = "Casa"
@@ -189,9 +180,9 @@ class MainForm(Form):
         # button_position
         # 
         self._button_position.AccessibleName = ""
-        self._button_position.Location = System.Drawing.Point(139, 14)
+        self._button_position.Location = Point(139, 14)
         self._button_position.Name = "button_position"
-        self._button_position.Size = System.Drawing.Size(63, 25)
+        self._button_position.Size = Size(63, 25)
         self._button_position.TabIndex = 3
         self._button_position.Text = "Set"
         self._button_position.UseVisualStyleBackColor = True
@@ -200,9 +191,9 @@ class MainForm(Form):
         # button_lingotti
         # 
         self._button_lingotti.AccessibleName = ""
-        self._button_lingotti.Location = System.Drawing.Point(139, 45)
+        self._button_lingotti.Location = Point(139, 45)
         self._button_lingotti.Name = "button_lingotti"
-        self._button_lingotti.Size = System.Drawing.Size(63, 25)
+        self._button_lingotti.Size = Size(63, 25)
         self._button_lingotti.TabIndex = 7
         self._button_lingotti.Text = "Imposta"
         self._button_lingotti.UseVisualStyleBackColor = True
@@ -211,9 +202,9 @@ class MainForm(Form):
         # button_gemme
         # 
         self._button_gemme.AccessibleName = ""
-        self._button_gemme.Location = System.Drawing.Point(139, 76)
+        self._button_gemme.Location = Point(139, 76)
         self._button_gemme.Name = "button_gemme"
-        self._button_gemme.Size = System.Drawing.Size(63, 25)
+        self._button_gemme.Size = Size(63, 25)
         self._button_gemme.TabIndex = 9
         self._button_gemme.Text = "Imposta"
         self._button_gemme.UseVisualStyleBackColor = True
@@ -221,38 +212,38 @@ class MainForm(Form):
         # 
         # label_position
         # 
-        self._label_position.Location = System.Drawing.Point(6, 14)
+        self._label_position.Location = Point(6, 14)
         self._label_position.Name = "label_position"
-        self._label_position.Size = System.Drawing.Size(127, 23)
+        self._label_position.Size = Size(127, 23)
         self._label_position.TabIndex = 24
         self._label_position.Text = "Posizione di scarico"
-        self._label_position.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_position.TextAlign = ContentAlignment.MiddleRight
         # 
         # label_lingotti
         # 
-        self._label_lingotti.Location = System.Drawing.Point(6, 47)
+        self._label_lingotti.Location = Point(6, 47)
         self._label_lingotti.Name = "label_lingotti"
-        self._label_lingotti.Size = System.Drawing.Size(127, 23)
+        self._label_lingotti.Size = Size(127, 23)
         self._label_lingotti.TabIndex = 25
         self._label_lingotti.Text = "Cassa lingotti:"
-        self._label_lingotti.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_lingotti.TextAlign = ContentAlignment.MiddleRight
         # 
         # label_gemme
         # 
-        self._label_gemme.Location = System.Drawing.Point(6, 76)
+        self._label_gemme.Location = Point(6, 76)
         self._label_gemme.Name = "label_gemme"
-        self._label_gemme.Size = System.Drawing.Size(127, 23)
+        self._label_gemme.Size = Size(127, 23)
         self._label_gemme.TabIndex = 26
         self._label_gemme.Text = "Cassa gemme:"
-        self._label_gemme.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_gemme.TextAlign = ContentAlignment.MiddleRight
         # 
         # groupBox_pet
         # 
         self._groupBox_pet.Controls.Add(self._label_fireBeetle)
         self._groupBox_pet.Controls.Add(self._button_fireBeetle)
-        self._groupBox_pet.Location = System.Drawing.Point(12, 352)
+        self._groupBox_pet.Location = Point(12, 352)
         self._groupBox_pet.Name = "groupBox_pet"
-        self._groupBox_pet.Size = System.Drawing.Size(208, 50)
+        self._groupBox_pet.Size = Size(208, 50)
         self._groupBox_pet.TabIndex = 24
         self._groupBox_pet.TabStop = False
         self._groupBox_pet.Text = "Pet"
@@ -260,9 +251,9 @@ class MainForm(Form):
         # button_fireBeetle
         # 
         self._button_fireBeetle.AccessibleName = ""
-        self._button_fireBeetle.Location = System.Drawing.Point(139, 14)
+        self._button_fireBeetle.Location = Point(139, 14)
         self._button_fireBeetle.Name = "button_fireBeetle"
-        self._button_fireBeetle.Size = System.Drawing.Size(63, 25)
+        self._button_fireBeetle.Size = Size(63, 25)
         self._button_fireBeetle.TabIndex = 17
         self._button_fireBeetle.Text = "Imposta"
         self._button_fireBeetle.UseVisualStyleBackColor = True
@@ -270,39 +261,39 @@ class MainForm(Form):
         # 
         # label_fireBeetle
         # 
-        self._label_fireBeetle.Location = System.Drawing.Point(6, 16)
+        self._label_fireBeetle.Location = Point(6, 16)
         self._label_fireBeetle.Name = "label_fireBeetle"
-        self._label_fireBeetle.Size = System.Drawing.Size(127, 23)
+        self._label_fireBeetle.Size = Size(127, 23)
         self._label_fireBeetle.TabIndex = 27
         self._label_fireBeetle.Text = "Fire Beetle"
-        self._label_fireBeetle.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        self._label_fireBeetle.TextAlign = ContentAlignment.MiddleRight
         # 
         # groupBox_output
         # 
         self._groupBox_output.Controls.Add(self._textBox_output)
-        self._groupBox_output.Location = System.Drawing.Point(226, 12)
+        self._groupBox_output.Location = Point(226, 12)
         self._groupBox_output.Name = "groupBox_output"
-        self._groupBox_output.Size = System.Drawing.Size(232, 431)
+        self._groupBox_output.Size = Size(232, 431)
         self._groupBox_output.TabIndex = 25
         self._groupBox_output.TabStop = False
         self._groupBox_output.Text = "Output"
         # 
         # textBox_output
         # 
-        self._textBox_output.Location = System.Drawing.Point(6, 14)
+        self._textBox_output.Location = Point(6, 14)
         self._textBox_output.Multiline = True
         self._textBox_output.Name = "textBox_output"
-        self._textBox_output.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        self._textBox_output.Size = System.Drawing.Size(220, 411)
+        self._textBox_output.ScrollBars = ScrollBars.Vertical
+        self._textBox_output.Size = Size(220, 411)
         self._textBox_output.TabIndex = 2
         # 
         # button_Run
         # 
         self._button_Run.AccessibleName = ""
-        self._button_Run.BackColor = System.Drawing.SystemColors.ControlLight
-        self._button_Run.Location = System.Drawing.Point(272, 449)
+        self._button_Run.BackColor = SystemColors.ControlLight
+        self._button_Run.Location = Point(272, 449)
         self._button_Run.Name = "button_Run"
-        self._button_Run.Size = System.Drawing.Size(134, 32)
+        self._button_Run.Size = Size(134, 32)
         self._button_Run.TabIndex = 28
         self._button_Run.Text = "Run"
         self._button_Run.UseVisualStyleBackColor = True
@@ -313,9 +304,9 @@ class MainForm(Form):
         self._groupBox_extra.Controls.Add(self._button_smelta)
         self._groupBox_extra.Controls.Add(self._button_scarico)
         self._groupBox_extra.Controls.Add(self._button_daiCibo)
-        self._groupBox_extra.Location = System.Drawing.Point(12, 408)
+        self._groupBox_extra.Location = Point(12, 408)
         self._groupBox_extra.Name = "groupBox_extra"
-        self._groupBox_extra.Size = System.Drawing.Size(208, 79)
+        self._groupBox_extra.Size = Size(208, 79)
         self._groupBox_extra.TabIndex = 28
         self._groupBox_extra.TabStop = False
         self._groupBox_extra.Text = "Funzioni Extra"
@@ -323,9 +314,9 @@ class MainForm(Form):
         # button_daiCibo
         # 
         self._button_daiCibo.AccessibleName = ""
-        self._button_daiCibo.Location = System.Drawing.Point(6, 19)
+        self._button_daiCibo.Location = Point(6, 19)
         self._button_daiCibo.Name = "button_daiCibo"
-        self._button_daiCibo.Size = System.Drawing.Size(63, 25)
+        self._button_daiCibo.Size = Size(63, 25)
         self._button_daiCibo.TabIndex = 17
         self._button_daiCibo.Text = "Sfama pet"
         self._button_daiCibo.UseVisualStyleBackColor = True
@@ -334,9 +325,9 @@ class MainForm(Form):
         # button_scarico
         # 
         self._button_scarico.AccessibleName = ""
-        self._button_scarico.Location = System.Drawing.Point(70, 19)
+        self._button_scarico.Location = Point(70, 19)
         self._button_scarico.Name = "button_scarico"
-        self._button_scarico.Size = System.Drawing.Size(63, 25)
+        self._button_scarico.Size = Size(63, 25)
         self._button_scarico.TabIndex = 29
         self._button_scarico.Text = "Scarica"
         self._button_scarico.UseVisualStyleBackColor = True
@@ -345,9 +336,9 @@ class MainForm(Form):
         # button_smelta
         # 
         self._button_smelta.AccessibleName = ""
-        self._button_smelta.Location = System.Drawing.Point(135, 19)
+        self._button_smelta.Location = Point(135, 19)
         self._button_smelta.Name = "button_smelta"
-        self._button_smelta.Size = System.Drawing.Size(63, 25)
+        self._button_smelta.Size = Size(63, 25)
         self._button_smelta.TabIndex = 30
         self._button_smelta.Text = "Smelta"
         self._button_smelta.UseVisualStyleBackColor = True
@@ -355,7 +346,7 @@ class MainForm(Form):
         # 
         # MainForm
         # 
-        self.ClientSize = System.Drawing.Size(470, 499)
+        self.ClientSize = Size(470, 499)
         self.Controls.Add(self._groupBox_extra)
         self.Controls.Add(self._button_Run)
         self.Controls.Add(self._groupBox_output)
@@ -363,18 +354,18 @@ class MainForm(Form):
         self.Controls.Add(self._groupBox_casa)
         self.Controls.Add(self._groupBox_runebookCasa)
         self.Controls.Add(self._groupBox_minebook)
-        self.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
+        self.FormBorderStyle = FormBorderStyle.Fixed3D
         self.Name = "MainForm"
         self.Text = "GiocoMiner 0.5"
         self.TopMost = True
-        self._groupBox_minebook.ResumeLayout(False)
-        self._groupBox_runebookCasa.ResumeLayout(False)
-        self._groupBox_casa.ResumeLayout(False)
-        self._groupBox_pet.ResumeLayout(False)
-        self._groupBox_output.ResumeLayout(False)
-        self._groupBox_output.PerformLayout()
-        self._groupBox_extra.ResumeLayout(False)
-        self.ResumeLayout(False)
+        #self._groupBox_minebook.ResumeLayout(False)
+        #self._groupBox_runebookCasa.ResumeLayout(False)
+        #self._groupBox_casa.ResumeLayout(False)
+        #self._groupBox_pet.ResumeLayout(False)
+        #self._groupBox_output.ResumeLayout(False)
+        #self._groupBox_output.PerformLayout()
+        #self._groupBox_extra.ResumeLayout(False)
+        #self.ResumeLayout(False)
         self._numericUpDown1.EndInit()
 
     def Button_addListaRunebookClick(self, sender, e):
