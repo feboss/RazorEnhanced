@@ -1,7 +1,0 @@
-Spells.CastMagery("Teleport")
-Target.WaitForTarget(10000, False)
-Target.TargetExecute(5980, 4047 ,1)
-Misc.Pause(800)
-Spells.CastMagery("Teleport")
-Target.WaitForTarget(10000, False)
-Target.TargetExecute(5989, 4047 ,29)
