@@ -93,7 +93,9 @@ def goBank():
     Gumps.SendAction(1431013363, runaBanca*6-1)
     while Player.Position.X == x and Player.Position.Y == y:
         Misc.Pause(200)
-    Player.ChatSay(33,"BANK")
+    while not Journal.Search("Bank container has"):
+        Player.ChatSay(52, "bank")
+        Misc.Pause(200)
     if Items.BackpackCount(ingotID,-1)<=10:
         for item in Player.Bank.Contains:
             if item.ItemID == 0x1BF2:
