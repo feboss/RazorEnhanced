@@ -81,6 +81,7 @@ def craftaBuckler():
             Items.UseItemByID(martelloID,-1)#mar       
         Gumps.WaitForGump(949095101, 5000)                            
     Gumps.SendAction(949095101, 0) #exit
+    if Target.HasTarget: Target.Cancel()
 
 def goBank():
     numeroScudi=((Player.MaxWeight-Player.Weight)/5-1-10+Items.BackpackCount(0x13E3,-1)*2)
@@ -125,21 +126,22 @@ def goFabbro():
     Gumps.WaitForGump(1431013363, 10000)
     Gumps.SendAction(1431013363, runaFabbro*6-1)
     while Player.Position.X == x and Player.Position.Y == y:
-        Misc.Pause(100)
+        Misc.Pause(100)    
     Misc.Pause(100)
     
 def consegna():
     while not Mobiles.FindBySerial(0x000377D0): Misc.Pause(50)
     while not Gumps.HasGump( ):
         Mobiles.UseMobile(0x000377D0)
-        Gumps.WaitForGump(2510313894, 10000)
+        Gumps.WaitForGump(2510313894, 10000)        
     for item in Player.Backpack.Contains:
         if item.ItemID==bucklerID:
             Gumps.SendAction(2510313894, 304)
-            Target.WaitForTarget(10000, False)
+            Target.WaitForTarget(10000)
             Target.TargetExecute(item)
-            Gumps.WaitForGump(2510313894, 10000)
-    Gumps.SendAction(2510313894, 0)        
+            Gumps.WaitForGump(2510313894, 10000)            
+    Gumps.SendAction(2510313894, 0)
+    if Target.HasTarget: Target.Cancel()
      
 def main():
     while True:    
@@ -152,4 +154,4 @@ def main():
         consegna()
         Misc.Pause(500)
      
-main()
+main()       
