@@ -73,7 +73,7 @@ def craftaBuckler():
     Gumps.SendAction(949095101, 15)
     Gumps.WaitForGump(949095101, 10000)
     if Items.BackpackCount(ingotID,-1)<10:#Se non crafti
-        Misc.Pause(2000)
+        Misc.Pause(1500)
     while(Items.BackpackCount(ingotID,-1)>=10):                     
         Gumps.SendAction(949095101, 2)  
         if Journal.Search("You have worn"):
@@ -85,16 +85,7 @@ def craftaBuckler():
 
 def goBank():
     numeroScudi=((Player.MaxWeight-Player.Weight)/5-1-10+Items.BackpackCount(0x13E3,-1)*2)
-    x=Player.Position.X
-    y=Player.Position.Y
-    if Target.HasTarget(): Target.Cancel()
-    Journal.Clear()
-    Gumps.ResetGump()
-    Items.UseItem(runebook)
-    Gumps.WaitForGump(1431013363, 10000)
-    Gumps.SendAction(1431013363, runaBanca*6-1)
-    while Player.Position.X == x and Player.Position.Y == y:
-        Misc.Pause(200)
+    recall(runebook,runaBanca)
     while not Journal.Search("Bank container has"):
         Player.ChatSay(52, "bank")
         Misc.Pause(200)
@@ -107,33 +98,17 @@ def goBank():
     else:
         Misc.Pause(2000)
 def goBritain():
-    x=Player.Position.X
-    y=Player.Position.Y
-    if Target.HasTarget(): Target.Cancel()
-    Journal.Clear()
-    Gumps.ResetGump()
-    Items.UseItem(runebook)
-    Gumps.WaitForGump(1431013363, 10000)
-    Gumps.SendAction(1431013363, runaBritain*6-1)
-    while Player.Position.X == x and Player.Position.Y == y:
-        Misc.Pause(200)
+    recall(runebook,runaBritain)
 def goFabbro():
-    x=Player.Position.X
-    y=Player.Position.Y
-    if Target.HasTarget(): Target.Cancel()
-    Gumps.ResetGump()
-    Items.UseItem(runebook)
-    Gumps.WaitForGump(1431013363, 10000)
-    Gumps.SendAction(1431013363, runaFabbro*6-1)
-    while Player.Position.X == x and Player.Position.Y == y:
-        Misc.Pause(100)    
-    Misc.Pause(100)
+    recall(runebook,runaFabbro)
     
 def consegna():
     while not Mobiles.FindBySerial(0x000377D0): Misc.Pause(50)
     while not Gumps.HasGump( ):
         Mobiles.UseMobile(0x000377D0)
-        Gumps.WaitForGump(2510313894, 10000)        
+        Gumps.WaitForGump(2510313894, 10000)
+    if Items.BackpackCount(bucklerID,-1)<10:
+        Misc.Pause(1500)
     for item in Player.Backpack.Contains:
         if item.ItemID==bucklerID:
             Gumps.SendAction(2510313894, 304)
@@ -142,7 +117,19 @@ def consegna():
             Gumps.WaitForGump(2510313894, 10000)            
     Gumps.SendAction(2510313894, 0)
     if Target.HasTarget: Target.Cancel()
-     
+
+def recall(runebook,runa):
+    x=Player.Position.X
+    y=Player.Position.Y
+    Journal.Clear()
+    Gumps.ResetGump()
+    Items.UseItem(runebook)
+    Gumps.WaitForGump(1431013363, 10000)
+    Gumps.SendAction(1431013363, runa*6-1)
+    while Player.Position.X == x and Player.Position.Y == y:
+        Misc.Pause(100)
+    Misc.Pause(50)    
+    
 def main():
     while True:    
         goBank()  
@@ -151,7 +138,5 @@ def main():
         goFabbro()
         craftaBuckler()
         goBritain()
-        consegna()
-        Misc.Pause(500)
-     
+        consegna()     
 main()       
