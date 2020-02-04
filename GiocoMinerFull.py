@@ -11,6 +11,8 @@ import cPickle as pickle
 ####################################
 ######### Variabili Sistema#########
 ####################################
+gumpRunebook=1593994358
+gumpTinkerTool=2066278152
 pickaxeID = 0x0E86
 tinkerID = 0x1EB8
 lastrune = 5
@@ -25,7 +27,7 @@ locationBlocked = "that location is blocked"
 noMetal = "There is no metal here to mine"
 youcant = "You can't mine there"
 cantseen = "Target cannot be seen"
-
+####################################
 class MainForm(Form):
     def __init__(self):
         self.InitializeComponent()
@@ -529,23 +531,23 @@ def MakePickaxe():
         return
     else:
         Items.UseItemByID(tinkerID,-1) #usa il tinker tool
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 8) # tools
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 114) # pickaxe
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 0) # close
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 8) # tools
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 114) # pickaxe
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 0) # close
         form.writeTextBox("Ho costruito un Piccone. Quanto so bravo?")
            
 def MakeTinkerTool():
     if Items.BackpackCount(tinkerID, -1) < 2:
         Items.UseItemByID(tinkerID,-1) #usa il tinker tool
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 8) # tools
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 23) # tinkertool
-        Gumps.WaitForGump(949095101, 10000)
-        Gumps.SendAction(949095101, 0) # close
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 8) # tools
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 23) # tinkertool
+        Gumps.WaitForGump(gumpTinkerTool, 10000)
+        Gumps.SendAction(gumpTinkerTool, 0) # close
         form.writeTextBox("Ho costruito un Tinker Tool... Quanto so bravo?")
    
 def Scarico(lastrune,**settings):
@@ -563,8 +565,8 @@ def Scarico(lastrune,**settings):
         while True:
             Gumps.ResetGump()
             Items.UseItem(RuneBookCasa)
-            Gumps.WaitForGump(1431013363, TimeoutOnWaitAction)
-            Gumps.SendAction(1431013363, PosizioneRunaCasa*6-1)
+            Gumps.WaitForGump(gumpRunebook, TimeoutOnWaitAction)
+            Gumps.SendAction(gumpRunebook, PosizioneRunaCasa*6-1)
             Misc.Pause(RecallPause)
             if not (Journal.Search(noLrc) or Journal.Search(noMana)):
                 break
@@ -595,8 +597,8 @@ def RecallNextSpot(RuneBookMining1,lastrune):
         Gumps.ResetGump()
         form.writeTextBox("Recallo al prossimo spot")
         Items.UseItem(RuneBookMining1)
-        Gumps.WaitForGump(1431013363, TimeoutOnWaitAction)
-        Gumps.SendAction(1431013363, lastrune)
+        Gumps.WaitForGump(gumpRunebook, TimeoutOnWaitAction)
+        Gumps.SendAction(gumpRunebook, lastrune)
         Misc.Pause(RecallPause)
         if not (Journal.Search(noLrc) or Journal.Search(noMana)):
             break
@@ -701,7 +703,7 @@ def minaMontagna(FireBeetle):
  
 def getNumRuneRunebook(runeBookSerial): 
     Items.UseItem(runeBookSerial)
-    Gumps.WaitForGump(1431013363, 10000)
+    Gumps.WaitForGump(gumpRunebook, 10000)
     Misc.Pause(100)
     listaBook = Gumps.LastGumpGetLineList( )
     newListaBook = []
